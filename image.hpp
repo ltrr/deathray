@@ -15,6 +15,10 @@ public:
         data = new Color4u[w * h];
     }
 
+    ~Image() {
+        delete[] data;
+    }
+
     Color4u& operator() (int i, int j) {
         return data[w * i + j];
     }
