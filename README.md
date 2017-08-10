@@ -1,10 +1,15 @@
-# Raytracer
-
-A simple Raytracer being developed for the 2017.2 "Computação Gráfica I" course.
+# DeathRay
+DeathRay is a simple Ray Tracer being developed for the 2017.2 "Computação Gráfica I" course.
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+### Install Lua
+The project uses Lua 5.3 to load scene files. To install Lua on a debian based distribution, execute
+```
+    sudo apt-get install liblua5.3-dev
+```
 
 ### Build
 
@@ -14,22 +19,14 @@ To build the project, run
 $ make
 ```
 
-### Run a example
+### Running
 
-All examples will be built on the root directory.
-To run a example 1, and save the result on image `a.ppm`
+To render a scene, execute
 
 ```
-./example1 a.ppm
+./render scenefile.lua
 ```
 
-If no argument is passed, the image will be printed on the standard output.
-
-## Examples
-
-| Name | Description |
-| --- | --- |
-| `example1` | Create a red/green 2d gradient |
 
 ## Author
 
