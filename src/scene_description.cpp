@@ -10,6 +10,8 @@
 #include "vector.h"
 #include "camera.h"
 #include "viewport.h"
+#include "sphere.h"
+#include "scene.h"
 using std::string;
 using std::shared_ptr;
 
@@ -34,6 +36,20 @@ template<>
 struct UserType<Viewport>
 {
     static constexpr const char* name = "viewport";
+};
+
+
+template<>
+struct UserType<Object>
+{
+    static constexpr const char* name = "object";
+};
+
+
+template<>
+struct UserType<Scene>
+{
+    static constexpr const char* name = "scene";
 };
 
 
@@ -226,9 +242,46 @@ static int scene_mkviewport(lua_State* L)  // width, height
 }
 
 
+static int scene_mksphere(lua_State* L)   // { center, radius }
+{
+    lua_pushliteral(L, "center");            // table 'center'
+    lua_gettable(L, 1);                      // table center
+    Vec3 center = LuaOp<Vec3>::check(L, -1); // table center
+    lua_pop(L, 1);                           // table
+
+    lua_pushliteral(L, "radius");              // table 'radius'
+    lua_gettable(L, 1);                        // table radius
+    float radius = LuaOp<float>::check(L, -1); // table radius
+    lua_pop(L, 1);                             // table
+
+    LuaOp<ObjectPtr>::newuserdata(L, new Sphere(center, radius));
+    return 1;
+}
+
+
+static int scene_mkscene(lua_State* L)      // { obj1, obj2, ... }
+{
+    lua_len(L, 1);                                      // {objs} len
+    int len = lua_tointeger(L, -1);                     // {objs} len
+    lua_pop(L, 1);                                      // {objs}
+    Scene *newscene = new Scene;
+    for (int i = 1; i <= len; i++) {
+        lua_geti(L, -1, i);                              // {objs}
+        ObjectPtr obj = LuaOp<ObjectPtr>::check(L, -1);  // {objs} obj
+        newscene->addobject(obj);
+        lua_pop(L, 1);                                   // {objs}
+    }
+    lua_pop(L, 1);                                       //
+    LuaOp<ScenePtr>::newuserdata(L, newscene);           // scene
+    return 1;
+}
+
+
 luaL_Reg scene_lib[] = {
     { "lookat", scene_lookat },
     { "mkviewport", scene_mkviewport },
+    { "sphere", scene_mksphere },
+    { "mkscene", scene_mkscene },
     { nullptr, nullptr }
 };
 
@@ -244,6 +297,18 @@ static int luaopen_scene(lua_State* L)
     luaL_newmetatable(L, "viewport"); // metavp
     lua_pushstring(L, "__gc");        // metavp '__gc'
     lua_pushcfunction(L, LuaOp<shared_ptr<Viewport>>::gc); // metavp '__gc' gc
+    lua_settable(L, -3);              // metavp
+    lua_pop(L, 1);                    //
+
+    luaL_newmetatable(L, "object"); // metavp
+    lua_pushstring(L, "__gc");        // metavp '__gc'
+    lua_pushcfunction(L, LuaOp<shared_ptr<Object>>::gc); // metavp '__gc' gc
+    lua_settable(L, -3);              // metavp
+    lua_pop(L, 1);                    //
+
+    luaL_newmetatable(L, "scene"); // metavp
+    lua_pushstring(L, "__gc");        // metavp '__gc'
+    lua_pushcfunction(L, LuaOp<shared_ptr<Scene>>::gc); // metavp '__gc' gc
     lua_settable(L, -3);              // metavp
     lua_pop(L, 1);                    //
 
@@ -332,3 +397,11 @@ shared_ptr<Camera> SceneDescription::getsetting(const string& name) const;
 
 template
 shared_ptr<Viewport> SceneDescription::getsetting(const string& name) const;
+
+
+template
+shared_ptr<Object> SceneDescription::getsetting(const string& name) const;
+
+
+template
+shared_ptr<Scene> SceneDescription::getsetting(const string& name) const;

@@ -10,19 +10,12 @@
 #include "scene_description.h"
 #include "camera.h"
 #include "viewport.h"
-//#include "cameraviewport.h"
+#include "object.h"
+#include "sphere.h"
+#include "scene.h"
 using std::string;
 using std::shared_ptr;
 
-bool hit_sphere(const Ray &r, const Point3 &c, float radius)
-{
-    Vec3 co = r.origin() - c;
-    float A = len2(r.dir());
-    float B = 2*dot(co, r.dir());
-    float C = len2(co) - radius * radius;
-
-    return (B*B - 4*A*C) >= 0;
-}
 
 int main(int argc, char** argv)
 {
@@ -40,16 +33,15 @@ int main(int argc, char** argv)
     string codification = sd.getsetting<string>("codification", "binary");
 
     auto viewport = sd.getsetting<shared_ptr<Viewport>>("viewport");
-    int rows = viewport->width();
-    int cols = viewport->height();
+    int rows = viewport->height();
+    int cols = viewport->width();
 
     Color3f zenith_color = sd.getsetting<Color3f>("zenith_color");
     Color3f nadir_color = sd.getsetting<Color3f>("nadir_color");
 
     auto cam = sd.getsetting<shared_ptr<Camera>>("camera");
 
-    Vec3 center(2, 0, 0);
-    float radius = 0.3;
+    auto obj = sd.getsetting<ScenePtr>("scene");
 
     // Init image
     Image im(rows, cols);
@@ -62,7 +54,7 @@ int main(int argc, char** argv)
 
             float t = (1 + ray.dir().y) / 2;
 
-            if (hit_sphere(ray, center, radius)) {
+            if (obj->hit(ray)) {
                 im(i, j) = Color3f(1,0,0);
             }
             else {
