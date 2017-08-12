@@ -20,6 +20,7 @@ $(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
 
 clean:
 	rm -r $(BUILD_DIR)
+	rm ./render
 
 .PHONY: clean all
 
