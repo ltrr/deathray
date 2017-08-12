@@ -7,7 +7,8 @@
 using std::min;
 using std::max;
 
-inline uint8_t ftu8(float x) {
+inline uint8_t ftu8(float x)
+{
     return max(0, min(255, int(256 * x)));
 }
 

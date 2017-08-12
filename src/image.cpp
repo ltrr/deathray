@@ -1,6 +1,7 @@
 #include "image.h"
 
-void Image::write_ppm_bin(std::ostream& out) {
+void Image::write_ppm_bin(std::ostream& out) const
+{
     out << "P6\n";
     out << w << " " << h << "\n";
     out << "255\n";
@@ -12,7 +13,8 @@ void Image::write_ppm_bin(std::ostream& out) {
     }
 }
 
-void Image::write_ppm_ascii(std::ostream& out) {
+void Image::write_ppm_ascii(std::ostream& out) const
+{
     out << "P3\n";
     out << w << " " << h << "\n";
     out << "255\n";

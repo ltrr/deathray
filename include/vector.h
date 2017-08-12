@@ -1,6 +1,13 @@
 #ifndef DEATHRAY_VECTOR_H_
 #define DEATHRAY_VECTOR_H_
 
+#include <cmath>
+#include <iostream>
+
+
+
+const float PI = acos(-1);
+
 class Vec3;
 
 class Vec3 {
@@ -21,6 +28,7 @@ public:
     inline void operator/=(const Vec3& v);
 };
 
+
 inline Vec3 operator+(const Vec3& v1, const Vec3& v2);
 inline Vec3 operator-(const Vec3& v1, const Vec3& v2);
 inline Vec3 operator*(float f, const Vec3& v);
@@ -29,8 +37,10 @@ inline Vec3 operator*(const Vec3& v1, const Vec3& v2);
 inline Vec3 operator/(const Vec3& v, float f);
 inline Vec3 operator/(const Vec3& v1, const Vec3& v2);
 
+
 inline std::istream& operator>>(std::istream& is, Vec3& v);
 inline std::ostream& operator<<(std::ostream& os, const Vec3& v);
+
 
 inline Vec3 unit(const Vec3& v);
 inline float len2(const Vec3& v);
@@ -39,8 +49,9 @@ inline float dot(const Vec3& v1, const Vec3& v2);
 inline Vec3 cross(const Vec3& v1, const Vec3& v2);
 inline float angle(const Vec3& v1, const Vec3& v2);
 
+
 typedef Vec3 Point3;
 
-#include "vector.inl"
 
+#include "vector.inl"
 #endif // DEATHRAY_VECTOR_H_

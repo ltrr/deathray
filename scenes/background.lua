@@ -1,9 +1,20 @@
-name = "background.ppm"
+name = "images/background.ppm"
 type = "ppm"
-codification = "ascii" -- aqui poderia ser: ascii
+codification = "binary" -- aqui poderia ser: ascii
 width = 400
-height = 400
-upper_left  = { 0, 1, 0 } -- Cor do canto superior esquerdo (verde)
-lower_left  = { 0, 0, 0 } -- Cor do canto inferior esquerdo (preto)
-upper_right = { 1, 1, 0 } -- Cor do canto superior direito (amarelo)
-lower_right  = { 1, 0, 0 } -- Cor do canto inferior direito (vermelho)
+height = 200
+zenith_color  = { 0, 1, 1 }
+nadir_color   = { 0, 0, 0 }
+
+viewport = mkviewport {
+    width = width,
+    height = height
+}
+
+camera = lookat {
+    origin = { 0, 0, 0 },
+    target = { 2, 0, 0 },
+    up = {0, 1, 0},
+    fov = math.pi / 2,
+    aspect = width / height
+}
