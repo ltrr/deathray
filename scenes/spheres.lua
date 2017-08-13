@@ -6,6 +6,8 @@ height = 400
 zenith_color  = { 0.8, 0.8, 0.9 }
 nadir_color   = { 0.5, 0.7, 1 }
 
+samples = 8
+
 viewport = mkviewport {
     width = width,
     height = height

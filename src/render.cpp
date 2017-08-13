@@ -13,6 +13,7 @@
 #include "object.h"
 #include "sphere.h"
 #include "scene.h"
+#include "blue.h"
 using std::string;
 using std::shared_ptr;
 
@@ -71,15 +72,32 @@ int main(int argc, char** argv)
 
     auto scene = sd.getsetting<ScenePtr>("scene");
 
+    int ns = sd.getsetting<int>("samples", 1);
+    float* blue = getblue(ns);
+    if (!blue) {
+        std::cerr << "error: invalid number of samples ("
+                  << ns << ")" << std::endl;
+        exit(1);
+    }
+
     // Init image
     Image im(rows, cols);
 
+    //const int ns = 64;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
 
-            Vec3 uv = viewport->pixeltowindow(i, j);
-            Ray ray = cam->windowtoray(uv);
-            im(i, j) = sqrt(raycolor(scene, ray, zenith_color, nadir_color, 0));
+            Color3f color;
+            for (int k = 0; k < ns; k++) {
+                float id = i + blue[k << 1];
+                float jd = j + blue[(k << 1) + 1];
+                Vec3 uv = viewport->pixeltowindow(id, jd);
+                Ray ray = cam->windowtoray(uv);
+                //TODO: use correct gamma combination
+                color += raycolor(scene, ray, zenith_color, nadir_color, 0);
+            }
+            color /= ns;
+            im(i, j) = sqrt(color);
         }
     }
 
