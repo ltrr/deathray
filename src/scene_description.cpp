@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "viewport.h"
 #include "sphere.h"
+#include "triangle.h"
 #include "scene.h"
 #include "material.h"
 #include "lambert.h"
@@ -301,6 +302,30 @@ static int scene_mksphere(lua_State* L)   // { center, radius }
 }
 
 
+static int scene_mktriangle(lua_State* L)   // { p1, p2, p3, material= }
+{
+    lua_geti(L, 1, 1);                   // table p1
+    Vec3 p1 = LuaOp<Vec3>::check(L, -1); // table p1
+    lua_pop(L, 1);                       // table
+
+    lua_geti(L, 1, 2);                   // table p2
+    Vec3 p2 = LuaOp<Vec3>::check(L, -1); // table p2
+    lua_pop(L, 1);                       // table
+
+    lua_geti(L, 1, 3);                   // table p3
+    Vec3 p3 = LuaOp<Vec3>::check(L, -1); // table p3
+    lua_pop(L, 1);                       // table
+
+    lua_pushliteral(L, "material");            // table 'material'
+    lua_gettable(L, 1);                        // table material
+    MaterialPtr mat = LuaOp<MaterialPtr>::check(L, -1); // table material
+    lua_pop(L, 1);                             // table
+
+    LuaOp<ObjectPtr>::newuserdata(L, new Triangle(p1, p2, p3, mat));
+    return 1;
+}
+
+
 static int scene_mkscene(lua_State* L)      // { obj1, obj2, ... }
 {
     lua_len(L, 1);                                      // {objs} len
@@ -323,6 +348,7 @@ luaL_Reg scene_lib[] = {
     { "lookat", scene_lookat },
     { "mkviewport", scene_mkviewport },
     { "sphere", scene_mksphere },
+    { "triangle", scene_mktriangle },
     { "lambert", scene_mklambert },
     { "metal", scene_mkmetal },
     { "mkscene", scene_mkscene },
