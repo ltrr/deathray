@@ -17,6 +17,34 @@ using std::string;
 using std::shared_ptr;
 
 
+const int MAXDEPTH = 40;
+
+Vec3 raycolor(const ScenePtr scene, const Ray& ray,
+              const Color3f& zenith, const Color3f& nadir, int depth)
+{
+    if (depth > MAXDEPTH) {
+        return Vec3(0, 0, 0);
+    }
+
+    Hit hit;
+    if (scene->hit(ray, 0, std::numeric_limits<float>::max(), hit)) {
+        Vec3 attenuation;
+        Ray scattered;
+
+        if(hit.material->scatter(ray, hit, attenuation, scattered)) {
+            return attenuation * raycolor(scene, scattered, zenith, nadir, depth+1);
+        }
+        else {
+            return Vec3(0, 0, 0);
+        }
+    }
+    else {
+        float t = (1 + ray.dir().y) / 2;
+        return (1-t) * nadir + t * zenith;
+    }
+}
+
+
 int main(int argc, char** argv)
 {
     // Check args
@@ -41,7 +69,7 @@ int main(int argc, char** argv)
 
     auto cam = sd.getsetting<shared_ptr<Camera>>("camera");
 
-    auto obj = sd.getsetting<ScenePtr>("scene");
+    auto scene = sd.getsetting<ScenePtr>("scene");
 
     // Init image
     Image im(rows, cols);
@@ -51,16 +79,7 @@ int main(int argc, char** argv)
 
             Vec3 uv = viewport->pixeltowindow(i, j);
             Ray ray = cam->windowtoray(uv);
-
-            float t = (1 + ray.dir().y) / 2;
-
-            if (obj->hit(ray)) {
-                im(i, j) = Color3f(1,0,0);
-            }
-            else {
-                Color3f bgcolor = (1-t) * nadir_color + t * zenith_color;
-                im(i, j) = bgcolor;
-            }
+            im(i, j) = sqrt(raycolor(scene, ray, zenith_color, nadir_color, 0));
         }
     }
 

@@ -19,4 +19,4 @@ public:
     }
 };
 
-#endif // DEATHRAYTRACER_RAY_HPP_
+#endif // DEATHRAY_RAY_HPP_

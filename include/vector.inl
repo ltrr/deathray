@@ -148,3 +148,9 @@ inline float angle(const Vec3& v1, const Vec3& v2)
 {
     return acos(dot(v1, v2)/(len(v1) * len(v2)));
 }
+
+
+inline Vec3 sqrt(const Vec3& v)
+{
+    return Vec3(sqrt(v.x), sqrt(v.y), sqrt(v.z));
+}

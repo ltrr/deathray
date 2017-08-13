@@ -12,6 +12,8 @@
 #include "viewport.h"
 #include "sphere.h"
 #include "scene.h"
+#include "material.h"
+#include "lambert.h"
 using std::string;
 using std::shared_ptr;
 
@@ -50,6 +52,13 @@ template<>
 struct UserType<Scene>
 {
     static constexpr const char* name = "scene";
+};
+
+
+template<>
+struct UserType<Material>
+{
+    static constexpr const char* name = "material";
 };
 
 
@@ -242,6 +251,16 @@ static int scene_mkviewport(lua_State* L)  // width, height
 }
 
 
+static int scene_mklambert(lua_State* L)   // albedo
+{
+    Vec3 albedo = LuaOp<Vec3>::check(L, 1); // albedo
+    lua_pop(L, 1);                          //
+
+    LuaOp<MaterialPtr>::newuserdata(L, new Lambert(albedo));
+    return 1;
+}
+
+
 static int scene_mksphere(lua_State* L)   // { center, radius }
 {
     lua_pushliteral(L, "center");            // table 'center'
@@ -254,7 +273,12 @@ static int scene_mksphere(lua_State* L)   // { center, radius }
     float radius = LuaOp<float>::check(L, -1); // table radius
     lua_pop(L, 1);                             // table
 
-    LuaOp<ObjectPtr>::newuserdata(L, new Sphere(center, radius));
+    lua_pushliteral(L, "material");            // table 'material'
+    lua_gettable(L, 1);                        // table material
+    MaterialPtr mat = LuaOp<MaterialPtr>::check(L, -1); // table material
+    lua_pop(L, 1);                             // table
+
+    LuaOp<ObjectPtr>::newuserdata(L, new Sphere(center, radius, mat));
     return 1;
 }
 
@@ -281,6 +305,7 @@ luaL_Reg scene_lib[] = {
     { "lookat", scene_lookat },
     { "mkviewport", scene_mkviewport },
     { "sphere", scene_mksphere },
+    { "lambert", scene_mklambert },
     { "mkscene", scene_mkscene },
     { nullptr, nullptr }
 };
@@ -310,6 +335,12 @@ static int luaopen_scene(lua_State* L)
     lua_pushstring(L, "__gc");        // metavp '__gc'
     lua_pushcfunction(L, LuaOp<shared_ptr<Scene>>::gc); // metavp '__gc' gc
     lua_settable(L, -3);              // metavp
+    lua_pop(L, 1);                    //
+
+    luaL_newmetatable(L, "material"); // metamat
+    lua_pushstring(L, "__gc");        // metamat '__gc'
+    lua_pushcfunction(L, LuaOp<shared_ptr<Material>>::gc); // metamat '__gc' gc
+    lua_settable(L, -3);              // metamat
     lua_pop(L, 1);                    //
 
     lua_getglobal(L, "_G");           // _G

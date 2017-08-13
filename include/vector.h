@@ -48,7 +48,7 @@ inline float len(const Vec3& v);
 inline float dot(const Vec3& v1, const Vec3& v2);
 inline Vec3 cross(const Vec3& v1, const Vec3& v2);
 inline float angle(const Vec3& v1, const Vec3& v2);
-
+inline Vec3 sqrt(const Vec3& v);
 
 typedef Vec3 Point3;
 
