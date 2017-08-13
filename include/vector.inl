@@ -154,3 +154,9 @@ inline Vec3 sqrt(const Vec3& v)
 {
     return Vec3(sqrt(v.x), sqrt(v.y), sqrt(v.z));
 }
+
+
+inline Vec3 reflect(const Vec3& v, const Vec3& n)
+{
+    return v - 2 * dot(v, n) * n;
+}

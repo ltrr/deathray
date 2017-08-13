@@ -5,7 +5,6 @@
 #include <iostream>
 
 
-
 const float PI = acos(-1);
 
 class Vec3;
@@ -49,6 +48,7 @@ inline float dot(const Vec3& v1, const Vec3& v2);
 inline Vec3 cross(const Vec3& v1, const Vec3& v2);
 inline float angle(const Vec3& v1, const Vec3& v2);
 inline Vec3 sqrt(const Vec3& v);
+inline Vec3 reflect(const Vec3& v, const Vec3& n);
 
 typedef Vec3 Point3;
 

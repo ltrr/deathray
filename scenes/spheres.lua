@@ -40,6 +40,6 @@ scene = mkscene {
     sphere {
         center = {0,-100.5,0},
         radius = 100,
-        material = lambert { 0.5, 0.5, 0.5 }
+        material = metal { albedo = { 0.5, 0.5, 0.5 }, fuzz = 0.5 }
     },
 }

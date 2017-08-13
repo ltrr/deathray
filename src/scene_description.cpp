@@ -14,6 +14,7 @@
 #include "scene.h"
 #include "material.h"
 #include "lambert.h"
+#include "metal.h"
 using std::string;
 using std::shared_ptr;
 
@@ -261,6 +262,23 @@ static int scene_mklambert(lua_State* L)   // albedo
 }
 
 
+static int scene_mkmetal(lua_State* L)   // { albedo fuzz }
+{
+    lua_pushliteral(L, "albedo");            // table 'albedo'
+    lua_gettable(L, 1);                      // table albedo
+    Vec3 albedo = LuaOp<Vec3>::check(L, -1); // table albedo
+    lua_pop(L, 1);                           // table
+
+    lua_pushliteral(L, "fuzz");              // table 'fuzz'
+    lua_gettable(L, 1);                      // table fuzz
+    float fuzz = LuaOp<float>::check(L, -1); // table fuzz
+    lua_pop(L, 1);                           // table
+
+    LuaOp<MaterialPtr>::newuserdata(L, new Metal(albedo, fuzz));
+    return 1;
+}
+
+
 static int scene_mksphere(lua_State* L)   // { center, radius }
 {
     lua_pushliteral(L, "center");            // table 'center'
@@ -306,6 +324,7 @@ luaL_Reg scene_lib[] = {
     { "mkviewport", scene_mkviewport },
     { "sphere", scene_mksphere },
     { "lambert", scene_mklambert },
+    { "metal", scene_mkmetal },
     { "mkscene", scene_mkscene },
     { nullptr, nullptr }
 };
