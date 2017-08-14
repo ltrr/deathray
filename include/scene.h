@@ -5,15 +5,20 @@
 #include <memory>
 #include <limits>
 #include "object.h"
+#include "background.h"
 
 
 class Scene
 {
 private:
     std::vector<ObjectPtr> objects;
+    BackgroundPtr bg;
 
 public:
     Scene() {}
+
+    Scene(BackgroundPtr bg)
+        : bg(bg) {}
 
     void addobject(const ObjectPtr& obj)
     {
@@ -35,6 +40,9 @@ public:
         }
         return (lower_t != std::numeric_limits<float>::max());
     }
+
+    inline BackgroundPtr background() const { return bg; }
+    inline BackgroundPtr& background() { return bg; }
 };
 
 

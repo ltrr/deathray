@@ -20,8 +20,7 @@ using std::shared_ptr;
 
 const int MAXDEPTH = 40;
 
-Vec3 raycolor(const ScenePtr scene, const Ray& ray,
-              const Color3f& zenith, const Color3f& nadir, int depth)
+Vec3 raycolor(const ScenePtr scene, const Ray& ray, int depth)
 {
     if (depth > MAXDEPTH) {
         return Vec3(0, 0, 0);
@@ -33,15 +32,14 @@ Vec3 raycolor(const ScenePtr scene, const Ray& ray,
         Ray scattered;
 
         if(hit.material->scatter(ray, hit, attenuation, scattered)) {
-            return attenuation * raycolor(scene, scattered, zenith, nadir, depth+1);
+            return attenuation * raycolor(scene, scattered, depth+1);
         }
         else {
             return Vec3(0, 0, 0);
         }
     }
     else {
-        float t = (1 + ray.dir().y) / 2;
-        return (1-t) * nadir + t * zenith;
+        return scene->background()->colorat(ray);
     }
 }
 
@@ -65,11 +63,7 @@ int main(int argc, char** argv)
     int rows = viewport->height();
     int cols = viewport->width();
 
-    Color3f zenith_color = sd.getsetting<Color3f>("zenith_color");
-    Color3f nadir_color = sd.getsetting<Color3f>("nadir_color");
-
     auto cam = sd.getsetting<shared_ptr<Camera>>("camera");
-
     auto scene = sd.getsetting<ScenePtr>("scene");
 
     int ns = sd.getsetting<int>("samples", 1);
@@ -82,8 +76,6 @@ int main(int argc, char** argv)
 
     // Init image
     Image im(rows, cols);
-
-    //const int ns = 64;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
 
@@ -94,7 +86,7 @@ int main(int argc, char** argv)
                 Vec3 uv = viewport->pixeltowindow(id, jd);
                 Ray ray = cam->windowtoray(uv);
                 //TODO: use correct gamma combination
-                color += raycolor(scene, ray, zenith_color, nadir_color, 0);
+                color += raycolor(scene, ray, 0);
             }
             color /= ns;
             im(i, j) = sqrt(color);

@@ -3,8 +3,7 @@ type = "ppm"
 codification = "binary"
 width = 400
 height = 400
-zenith_color  = { 1, 1, 1 }
-nadir_color   = { 0, 0, 0 }
+
 
 samples = 8
 
@@ -58,4 +57,8 @@ scene = mkscene {
         gfl, gbl, gbr,
         material = metal { albedo = { 0.5, 0.5, 0.5 }, fuzz = 0.2 }
     },
+    bg = sky {
+        zenith = { 1, 1, 1 },
+        nadir = { 0, 0, 0 }
+    }
 }

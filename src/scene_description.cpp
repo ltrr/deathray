@@ -16,6 +16,7 @@
 #include "material.h"
 #include "lambert.h"
 #include "metal.h"
+#include "sky.h"
 using std::string;
 using std::shared_ptr;
 
@@ -61,6 +62,13 @@ template<>
 struct UserType<Material>
 {
     static constexpr const char* name = "material";
+};
+
+
+template<>
+struct UserType<Background>
+{
+    static constexpr const char* name = "background";
 };
 
 
@@ -326,12 +334,34 @@ static int scene_mktriangle(lua_State* L)   // { p1, p2, p3, material= }
 }
 
 
-static int scene_mkscene(lua_State* L)      // { obj1, obj2, ... }
+static int scene_mksky(lua_State* L)   // { zenith, nadir }
 {
+    lua_pushliteral(L, "zenith");            // table 'zenith'
+    lua_gettable(L, 1);                      // table zenith
+    Vec3 zenith = LuaOp<Vec3>::check(L, -1); // table zenith
+    lua_pop(L, 1);                           // table
+
+    lua_pushliteral(L, "nadir");            // table 'nadir'
+    lua_gettable(L, 1);                      // table nadir
+    Vec3 nadir = LuaOp<Vec3>::check(L, -1); // table nadir
+    lua_pop(L, 1);
+
+    LuaOp<BackgroundPtr>::newuserdata(L, new Sky(zenith, nadir));
+    return 1;
+}
+
+
+static int scene_mkscene(lua_State* L)      // { obj1, obj2, ..., bg = }
+{
+    lua_pushliteral(L, "bg");               // {objs} 'bg'
+    lua_gettable(L, 1);                     // {objs} bg
+    auto bg = LuaOp<BackgroundPtr>::check(L, -1);    // {objs} bg
+    lua_pop(L, 1);                          // {objs}
+
     lua_len(L, 1);                                      // {objs} len
     int len = lua_tointeger(L, -1);                     // {objs} len
     lua_pop(L, 1);                                      // {objs}
-    Scene *newscene = new Scene;
+    Scene *newscene = new Scene(bg);
     for (int i = 1; i <= len; i++) {
         lua_geti(L, -1, i);                              // {objs}
         ObjectPtr obj = LuaOp<ObjectPtr>::check(L, -1);  // {objs} obj
@@ -351,6 +381,7 @@ luaL_Reg scene_lib[] = {
     { "triangle", scene_mktriangle },
     { "lambert", scene_mklambert },
     { "metal", scene_mkmetal },
+    { "sky", scene_mksky },
     { "mkscene", scene_mkscene },
     { nullptr, nullptr }
 };
@@ -386,6 +417,12 @@ static int luaopen_scene(lua_State* L)
     lua_pushstring(L, "__gc");        // metamat '__gc'
     lua_pushcfunction(L, LuaOp<shared_ptr<Material>>::gc); // metamat '__gc' gc
     lua_settable(L, -3);              // metamat
+    lua_pop(L, 1);                    //
+
+    luaL_newmetatable(L, "background"); // metabg
+    lua_pushstring(L, "__gc");        // metabg '__gc'
+    lua_pushcfunction(L, LuaOp<shared_ptr<Background>>::gc); // metabg '__gc' gc
+    lua_settable(L, -3);              // metabg
     lua_pop(L, 1);                    //
 
     lua_getglobal(L, "_G");           // _G
