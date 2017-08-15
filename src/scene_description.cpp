@@ -451,7 +451,13 @@ SceneDescription SceneDescription::fromfile(const string& filename)
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
     luaopen_scene(L);
-    luaL_dofile(L, filename.c_str());
+    bool error = luaL_dofile(L, filename.c_str());
+    if (error) {
+        const char* msg = lua_tostring(L, -1);
+        std::cerr << "error loading file " << filename << '\n'
+                  << msg << std::endl;
+        exit(1);
+    }
     return SceneDescription(L);
 }
 
