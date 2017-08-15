@@ -12,7 +12,7 @@ viewport = mkviewport {
 }
 
 camera = lookat {
-    origin = { -10, 5, 0 },
+    origin = { -2, 0, 0 },
     target = { 0, 0, 0 },
     up = { 0, 1, 0 },
     fov = math.pi / 2,
