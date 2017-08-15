@@ -27,7 +27,7 @@ PerspectiveCamera::PerspectiveCamera(
     this->origin = origin;
     this->horizontal = 2 * w * right_u;
     this->vertical   = 2 * h * up_u;
-    this->bottomleft = front - h*up_u - w * right_u;
+    this->bottomleft = front_u - h*up_u - w * right_u;
 }
 
 
