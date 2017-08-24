@@ -11,7 +11,7 @@ SRCS := $(shell find $(SRC_DIR) -name "*.cpp")
 OBJS := $(addprefix $(BUILD_DIR)/,$(addsuffix .o,$(notdir $(SRCS))))
 DEPS := $(OBJS:.o=.d)
 
-render: $(OBJS)
+deathray: $(OBJS)
 	g++ $(CPPFLAGS) $(OBJS) -o $@ $(LUA_LIBS)
 
 $(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
