@@ -17,6 +17,9 @@
 #include "lambert.h"
 #include "metal.h"
 #include "sky.h"
+#include "rendermethod.h"
+#include "rendernormal.h"
+#include "renderdepth.h"
 using std::string;
 using std::shared_ptr;
 
@@ -72,11 +75,19 @@ struct UserType<Background>
 };
 
 
+template<>
+struct UserType<RenderMethod>
+{
+    static constexpr const char* name = "rendermethod";
+};
+
+
 //// lua type templates ////
 template<typename T>
 struct LuaOp
 {
     static T check(lua_State *L, int idx);
+    static bool is(lua_State *L, int idx);
 };
 
 
@@ -86,6 +97,11 @@ struct LuaOp<int>
     static int check(lua_State *L, int idx)
     {
         return luaL_checkinteger(L, idx);
+    }
+
+    static bool is(lua_State *L, int idx)
+    {
+        return lua_isinteger(L, idx);
     }
 };
 
@@ -97,6 +113,11 @@ struct LuaOp<float>
     {
         return luaL_checknumber(L, idx);
     }
+
+    static bool is(lua_State *L, int idx)
+    {
+        return lua_isnumber(L, idx);
+    }
 };
 
 
@@ -106,6 +127,11 @@ struct LuaOp<string>
     static string check(lua_State *L, int idx)
     {
         return string(luaL_checkstring(L, idx));
+    }
+
+    static bool is(lua_State *L, int idx)
+    {
+        return lua_isstring(L, idx);
     }
 };
 
@@ -127,6 +153,21 @@ struct LuaOp<Vec3>
         lua_pop(L, 3);               // ...
         return Vec3(x, y, z);
     }
+
+    static bool is(lua_State *L, int idx)
+    {
+        if (idx < 0)
+            idx += lua_gettop(L) + 1; // correct for negative indices
+        if (!lua_istable(L, idx)) return false;
+        lua_geti(L, idx, 1);         // ... x
+        lua_geti(L, idx, 2);         // ... x y
+        lua_geti(L, idx, 3);         // ... x y z
+        bool ok = (LuaOp<float>::is(L, -1)
+                   && LuaOp<float>::is(L, -2)
+                   && LuaOp<float>::is(L, -3));
+        lua_pop(L, 3);               // ...
+        return ok;
+    }
 };
 
 
@@ -139,6 +180,21 @@ struct LuaOp<shared_ptr<T>>
     static shared_ptr<T> check(lua_State *L, int idx)
     {
         return *((shared_ptr<T> *) luaL_checkudata(L, idx, UserType<T>::name));
+    }
+
+    static bool is(lua_State *L, int idx)
+    {
+        void *p = luaL_testudata(L, idx, UserType<T>::name);
+        return p != nullptr;
+    }
+
+    static void registerudata(lua_State *L)
+    {
+        luaL_newmetatable(L, UserType<T>::name); // meta
+        lua_pushstring(L, "__gc");               // meta '__gc'
+        lua_pushcfunction(L, gc);                // meta '__gc' gc
+        lua_settable(L, -3);                     // meta
+        lua_pop(L, 1);                           //
     }
 
     static int gc(lua_State *L)
@@ -159,6 +215,59 @@ struct LuaOp<shared_ptr<T>>
 
 
 template <typename T>
+bool getintable(lua_State *L, int table_idx, const char* idx, T& result)
+{
+    lua_pushstring(L, idx);                  // ... idx
+    lua_gettable(L, table_idx);               // ... obj
+    if (!LuaOp<T>::is(L, -1)) {
+        lua_pop(L, 1);                         // ...
+        return false;
+    }
+    result = LuaOp<T>::check(L, -1);          // ... obj
+    lua_pop(L, 1);                            // ...
+    return true;
+}
+
+
+template <typename T>
+bool getintable(lua_State *L, int table_idx, int idx, T& result)
+{
+    lua_geti(L, table_idx, idx);               // ... obj
+    if (!LuaOp<T>::is(L, -1)) {
+        lua_pop(L, 1);                         // ...
+        return false;
+    }
+    result = LuaOp<T>::check(L, -1);          // ... obj
+    lua_pop(L, 1);                            // ...
+    return true;
+}
+
+
+template <typename T>
+bool getintable(lua_State *L, int table_idx, const char* idx, T& result,
+                const T& default_)
+{
+    if (!getintable(L, table_idx, idx, result)) {
+        result = default_;
+        return false;
+    }
+    return true;
+}
+
+
+template <typename T>
+bool getintable(lua_State *L, int table_idx, int idx, T& result,
+                const T& default_)
+{
+    if (!getintable(L, table_idx, idx, result)) {
+        result = default_;
+        return false;
+    }
+    return true;
+}
+
+
+template <typename T>
 int unsafe_getsetting(lua_State *L)
 {   // *result *name
     T *p = (T *) lua_touserdata(L, 1);
@@ -169,94 +278,30 @@ int unsafe_getsetting(lua_State *L)
 }
 
 
-template <typename T>
-static T _getsetting(lua_State *L, const string& name)
-{
-    T val;
-    const char* name_c = name.data();
-    lua_pushcfunction(L, unsafe_getsetting<T>);
-    lua_pushlightuserdata(L, &val);
-    lua_pushlightuserdata(L, (void*) name_c);
-    int status = lua_pcall(L, 2, 0, 0);
-    if (status == LUA_OK) {
-        return val;
-    }
-    else {
-        const char *error = lua_tostring(L, -1);
-        std::cerr << "error obtaining setting '" << name << "':" << '\n'
-                  << error << '\n'
-                  << "exiting." << std::endl;
-        exit(1);
-    }
-}
-
-
-template <typename T>
-static T _getsetting(lua_State *L, const std::string& name, const T& default_)
-{
-    T val;
-    const char* name_c = name.c_str();
-    lua_pushcfunction(L, unsafe_getsetting<T>);
-    lua_pushlightuserdata(L, &val);
-    lua_pushlightuserdata(L, (void*) name_c);
-    int status = lua_pcall(L, 2, 0, 0);
-    if (status == LUA_OK) {
-        return val;
-    }
-    else {
-        return default_;
-    }
-}
-
-
-
 //// lua CFunctions ////
-static int scene_lookat(lua_State* L)         // table
+static int scene_lookat(lua_State* L)
 {
-    lua_pushliteral(L, "origin");             // table 'origin'
-    lua_gettable(L, 1);                       // table origin
-    Vec3 origin = LuaOp<Vec3>::check(L, -1);  // table origin
-    lua_pop(L, 1);                            // table
-
-    lua_pushliteral(L, "target");             // table 'target'
-    lua_gettable(L, 1);                       // table target
-    Vec3 target = LuaOp<Vec3>::check(L, -1);  // table target
-    lua_pop(L, 1);                            // table
-
-    lua_pushliteral(L, "up");                 // table 'up'
-    lua_gettable(L, 1);                       // table up
-    Vec3 up = LuaOp<Vec3>::check(L, -1);      // table up
-    lua_pop(L, 1);                            // table
-
-    lua_pushliteral(L, "aspect");             // table 'aspect'
-    lua_gettable(L, 1);                       // table aspect
-    float aspect = luaL_checknumber(L, -1);   // table aspect
-    lua_pop(L, 1);                            // table
-
-    lua_pushliteral(L, "fov");                // table 'fov'
-    lua_gettable(L, 1);                       // table fov
-    float fov = luaL_checknumber(L, -1);      // table fov
-    lua_pop(L, 2);                            //
+    Vec3 origin, target, up;
+    float aspect, fov;
+    getintable(L, 1, "origin", origin);
+    getintable(L, 1, "target", target);
+    getintable(L, 1, "up", up);
+    getintable(L, 1, "aspect", aspect);
+    getintable(L, 1, "fov", fov);
 
     PerspectiveCamera temp = PerspectiveCamera::lookat(origin, target, up, fov, aspect);
-    LuaOp<shared_ptr<Camera>>::newuserdata(L, new PerspectiveCamera(temp));
+    LuaOp<CameraPtr>::newuserdata(L, new PerspectiveCamera(temp));
     return 1;
 }
 
 
-static int scene_mkviewport(lua_State* L)  // width, height
+static int scene_mkviewport(lua_State* L)  // { width=, height= }
 {
-    lua_pushliteral(L, "width");           // table 'width'
-    lua_gettable(L, 1);                    // table width
-    int width = LuaOp<int>::check(L, -1);  // table width
-    lua_pop(L, 1);                         // table
+    int width, height;
+    getintable(L, 1, "width", width);
+    getintable(L, 1, "height", height);
 
-    lua_pushliteral(L, "height");          // table 'height'
-    lua_gettable(L, 1);                    // table height
-    int height = LuaOp<int>::check(L, -1); // table height
-    lua_pop(L, 1);                         // table
-
-    LuaOp<shared_ptr<Viewport>>::newuserdata(L, new Viewport(width, height));
+    LuaOp<ViewportPtr>::newuserdata(L, new Viewport(width, height));
     return 1;
 }
 
@@ -271,17 +316,12 @@ static int scene_mklambert(lua_State* L)   // albedo
 }
 
 
-static int scene_mkmetal(lua_State* L)   // { albedo fuzz }
+static int scene_mkmetal(lua_State* L)   // { albedo=, fuzz= }
 {
-    lua_pushliteral(L, "albedo");            // table 'albedo'
-    lua_gettable(L, 1);                      // table albedo
-    Vec3 albedo = LuaOp<Vec3>::check(L, -1); // table albedo
-    lua_pop(L, 1);                           // table
-
-    lua_pushliteral(L, "fuzz");              // table 'fuzz'
-    lua_gettable(L, 1);                      // table fuzz
-    float fuzz = LuaOp<float>::check(L, -1); // table fuzz
-    lua_pop(L, 1);                           // table
+    Vec3 albedo;
+    float fuzz;
+    getintable(L, 1, "albedo", albedo);
+    getintable(L, 1, "fuzz", fuzz, 0.0f);
 
     LuaOp<MaterialPtr>::newuserdata(L, new Metal(albedo, fuzz));
     return 1;
@@ -290,20 +330,12 @@ static int scene_mkmetal(lua_State* L)   // { albedo fuzz }
 
 static int scene_mksphere(lua_State* L)   // { center, radius }
 {
-    lua_pushliteral(L, "center");            // table 'center'
-    lua_gettable(L, 1);                      // table center
-    Vec3 center = LuaOp<Vec3>::check(L, -1); // table center
-    lua_pop(L, 1);                           // table
-
-    lua_pushliteral(L, "radius");              // table 'radius'
-    lua_gettable(L, 1);                        // table radius
-    float radius = LuaOp<float>::check(L, -1); // table radius
-    lua_pop(L, 1);                             // table
-
-    lua_pushliteral(L, "material");            // table 'material'
-    lua_gettable(L, 1);                        // table material
-    MaterialPtr mat = LuaOp<MaterialPtr>::check(L, -1); // table material
-    lua_pop(L, 1);                             // table
+    Vec3 center;
+    float radius;
+    MaterialPtr mat;
+    getintable(L, 1, "center", center);
+    getintable(L, 1, "radius", radius);
+    getintable(L, 1, "material", mat);
 
     LuaOp<ObjectPtr>::newuserdata(L, new Sphere(center, radius, mat));
     return 1;
@@ -312,22 +344,12 @@ static int scene_mksphere(lua_State* L)   // { center, radius }
 
 static int scene_mktriangle(lua_State* L)   // { p1, p2, p3, material= }
 {
-    lua_geti(L, 1, 1);                   // table p1
-    Vec3 p1 = LuaOp<Vec3>::check(L, -1); // table p1
-    lua_pop(L, 1);                       // table
-
-    lua_geti(L, 1, 2);                   // table p2
-    Vec3 p2 = LuaOp<Vec3>::check(L, -1); // table p2
-    lua_pop(L, 1);                       // table
-
-    lua_geti(L, 1, 3);                   // table p3
-    Vec3 p3 = LuaOp<Vec3>::check(L, -1); // table p3
-    lua_pop(L, 1);                       // table
-
-    lua_pushliteral(L, "material");            // table 'material'
-    lua_gettable(L, 1);                        // table material
-    MaterialPtr mat = LuaOp<MaterialPtr>::check(L, -1); // table material
-    lua_pop(L, 1);                             // table
+    Vec3 p1, p2, p3;
+    MaterialPtr mat;
+    getintable(L, 1, 1, p1);
+    getintable(L, 1, 2, p2);
+    getintable(L, 1, 3, p3);
+    getintable(L, 1, "material", mat);
 
     LuaOp<ObjectPtr>::newuserdata(L, new Triangle(p1, p2, p3, mat));
     return 1;
@@ -336,17 +358,31 @@ static int scene_mktriangle(lua_State* L)   // { p1, p2, p3, material= }
 
 static int scene_mksky(lua_State* L)   // { zenith, nadir }
 {
-    lua_pushliteral(L, "zenith");            // table 'zenith'
-    lua_gettable(L, 1);                      // table zenith
-    Vec3 zenith = LuaOp<Vec3>::check(L, -1); // table zenith
-    lua_pop(L, 1);                           // table
-
-    lua_pushliteral(L, "nadir");            // table 'nadir'
-    lua_gettable(L, 1);                      // table nadir
-    Vec3 nadir = LuaOp<Vec3>::check(L, -1); // table nadir
-    lua_pop(L, 1);
+    Vec3 zenith, nadir;
+    getintable(L, 1, "zenith", zenith);
+    getintable(L, 1, "nadir", nadir);
 
     LuaOp<BackgroundPtr>::newuserdata(L, new Sky(zenith, nadir));
+    return 1;
+}
+
+
+static int scene_mkdepthrender(lua_State* L)   // { foreground=, background=, maxdepth= }
+{
+    Vec3 fg, bg;
+    float maxdepth;
+    getintable(L, 1, "foreground", fg, Vec3(1,1,1));
+    getintable(L, 1, "background", bg, Vec3(0,0,0));
+    getintable(L, 1, "maxdepth", maxdepth, 1.0f);
+
+    LuaOp<RenderMethodPtr>::newuserdata(L, new RenderDepth(maxdepth, fg, bg));
+    return 1;
+}
+
+
+static int scene_mknormalrender(lua_State* L)
+{
+    LuaOp<RenderMethodPtr>::newuserdata(L, new RenderNormal());
     return 1;
 }
 
@@ -382,6 +418,8 @@ luaL_Reg scene_lib[] = {
     { "lambert", scene_mklambert },
     { "metal", scene_mkmetal },
     { "sky", scene_mksky },
+    { "renderdepth", scene_mkdepthrender },
+    { "rendernormal", scene_mknormalrender },
     { "mkscene", scene_mkscene },
     { nullptr, nullptr }
 };
@@ -389,45 +427,16 @@ luaL_Reg scene_lib[] = {
 
 static int luaopen_scene(lua_State* L)
 {
-    luaL_newmetatable(L, "camera"); // metacam
-    lua_pushstring(L, "__gc");      // metacam '__gc'
-    lua_pushcfunction(L, LuaOp<shared_ptr<Camera>>::gc); // metacam '__gc' gc
-    lua_settable(L, -3);            // metacam
-    lua_pop(L, 1);                  //
-
-    luaL_newmetatable(L, "viewport"); // metavp
-    lua_pushstring(L, "__gc");        // metavp '__gc'
-    lua_pushcfunction(L, LuaOp<shared_ptr<Viewport>>::gc); // metavp '__gc' gc
-    lua_settable(L, -3);              // metavp
-    lua_pop(L, 1);                    //
-
-    luaL_newmetatable(L, "object"); // metavp
-    lua_pushstring(L, "__gc");        // metavp '__gc'
-    lua_pushcfunction(L, LuaOp<shared_ptr<Object>>::gc); // metavp '__gc' gc
-    lua_settable(L, -3);              // metavp
-    lua_pop(L, 1);                    //
-
-    luaL_newmetatable(L, "scene"); // metavp
-    lua_pushstring(L, "__gc");        // metavp '__gc'
-    lua_pushcfunction(L, LuaOp<shared_ptr<Scene>>::gc); // metavp '__gc' gc
-    lua_settable(L, -3);              // metavp
-    lua_pop(L, 1);                    //
-
-    luaL_newmetatable(L, "material"); // metamat
-    lua_pushstring(L, "__gc");        // metamat '__gc'
-    lua_pushcfunction(L, LuaOp<shared_ptr<Material>>::gc); // metamat '__gc' gc
-    lua_settable(L, -3);              // metamat
-    lua_pop(L, 1);                    //
-
-    luaL_newmetatable(L, "background"); // metabg
-    lua_pushstring(L, "__gc");        // metabg '__gc'
-    lua_pushcfunction(L, LuaOp<shared_ptr<Background>>::gc); // metabg '__gc' gc
-    lua_settable(L, -3);              // metabg
-    lua_pop(L, 1);                    //
+    LuaOp<ScenePtr>::registerudata(L);
+    LuaOp<CameraPtr>::registerudata(L);
+    LuaOp<ViewportPtr>::registerudata(L);
+    LuaOp<ObjectPtr>::registerudata(L);
+    LuaOp<MaterialPtr>::registerudata(L);
+    LuaOp<BackgroundPtr>::registerudata(L);
+    LuaOp<RenderMethodPtr>::registerudata(L);
 
     lua_getglobal(L, "_G");           // _G
     luaL_setfuncs(L, scene_lib, 0);   // _G
-
     lua_pop(L, 1);                    //
     return 0;
 }
@@ -465,14 +474,61 @@ SceneDescription SceneDescription::fromfile(const string& filename)
 template <typename T>
 T SceneDescription::getsetting(const string& name, const T& default_) const
 {
-    return _getsetting<T>(L, name, default_);
+    //return _getsetting<T>(L, name, default_);
+    T val;
+    lua_getglobal(L, "_G");           // _G
+    lua_pushstring(L, name.c_str());  // _G name
+    lua_gettable(L, 1);               // _G val
+
+    if (lua_isnil(L, 2)) { // not set
+        lua_pop(L, 2);                //
+        return default_;
+    }
+    else {
+        const char* name_c = name.c_str();
+        lua_pushcfunction(L, unsafe_getsetting<T>);
+        lua_pushlightuserdata(L, &val);
+        lua_pushlightuserdata(L, (void*) name_c);
+        int status = lua_pcall(L, 2, 0, 0);
+        if (status == LUA_OK) {
+            lua_settop(L, 0);
+            return val;
+        }
+        else {
+            const char *error = lua_tostring(L, -1);
+            std::cerr << "error obtaining setting '" << name << "':" << '\n'
+                      << error << '\n'
+                      << "exiting." << std::endl;
+            exit(1);
+        }
+    }
 }
 
 
 template <typename T>
 T SceneDescription::getsetting(const string& name) const
 {
-    return _getsetting<T>(L, name);
+    lua_getglobal(L, "_G");           // _G
+    lua_pushstring(L, name.c_str());  // _G name
+    lua_gettable(L, 1);               // _G val
+
+    T val;
+    const char* name_c = name.c_str();
+    lua_pushcfunction(L, unsafe_getsetting<T>);
+    lua_pushlightuserdata(L, &val);
+    lua_pushlightuserdata(L, (void*) name_c);
+    int status = lua_pcall(L, 2, 0, 0);
+    if (status == LUA_OK) {
+        lua_settop(L, 0);
+        return val;
+    }
+    else {
+        const char *error = lua_tostring(L, -1);
+        std::cerr << "error obtaining setting '" << name << "':" << '\n'
+                  << error << '\n'
+                  << "exiting." << std::endl;
+        exit(1);
+    }
 }
 
 
@@ -524,3 +580,10 @@ shared_ptr<Object> SceneDescription::getsetting(const string& name) const;
 
 template
 shared_ptr<Scene> SceneDescription::getsetting(const string& name) const;
+
+
+template
+RenderMethodPtr SceneDescription::getsetting(const string& name) const;
+
+template
+RenderMethodPtr SceneDescription::getsetting(const string& name, const RenderMethodPtr& default_) const;

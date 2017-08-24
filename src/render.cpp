@@ -14,35 +14,11 @@
 #include "sphere.h"
 #include "scene.h"
 #include "blue.h"
+#include "raytracer.h"
+#include "rendernormal.h"
+#include "renderdepth.h"
 using std::string;
 using std::shared_ptr;
-
-
-const int MAXDEPTH = 40;
-
-Vec3 raycolor(const ScenePtr scene, const Ray& ray, int depth)
-{
-    if (depth > MAXDEPTH) {
-        return Vec3(0, 0, 0);
-    }
-
-    Hit hit;
-    if (scene->hit(ray, 0, std::numeric_limits<float>::max(), hit)) {
-        Vec3 attenuation;
-        Ray scattered;
-
-        if(hit.material->scatter(ray, hit, attenuation, scattered)) {
-            return attenuation * raycolor(scene, scattered, depth+1);
-        }
-        else {
-            return Vec3(0, 0, 0);
-        }
-    }
-    else {
-        return scene->background()->colorat(ray);
-    }
-}
-
 
 int main(int argc, char** argv)
 {
@@ -65,6 +41,10 @@ int main(int argc, char** argv)
 
     auto cam = sd.getsetting<shared_ptr<Camera>>("camera");
     auto scene = sd.getsetting<ScenePtr>("scene");
+    auto method = sd.getsetting<RenderMethodPtr>("method", nullptr);
+    if (!method) {
+        method = RenderMethodPtr(new RayTracer());
+    }
 
     int ns = sd.getsetting<int>("samples", 1);
     float* blue = getblue(ns);
@@ -86,10 +66,10 @@ int main(int argc, char** argv)
                 Vec3 uv = viewport->pixeltowindow(id, jd);
                 Ray ray = cam->windowtoray(uv);
                 //TODO: use correct gamma combination
-                color += raycolor(scene, ray, 0);
+                color += method->colorat(scene, ray);
             }
             color /= ns;
-            im(i, j) = sqrt(color);
+            im(i, j) = sqrt(color); // gamma correction
         }
     }
 

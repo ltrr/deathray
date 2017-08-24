@@ -1,6 +1,9 @@
 #ifndef DEATHRAY_VIEWPORT_H
 #define DEATHRAY_VIEWPORT_H
 
+#include <memory>
+
+
 class Viewport
 {
 private:
@@ -19,5 +22,8 @@ public:
         return Vec3(j/w, 1 -  i/h, 1);
     }
 };
+
+
+typedef std::shared_ptr<Viewport> ViewportPtr;
 
 #endif // DEATHRAY_VIEWPORT_H

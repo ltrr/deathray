@@ -1,8 +1,10 @@
 #ifndef DEATHRAY_CAMERA_H
 #define DEATHRAY_CAMERA_H
 
+#include <memory>
 #include "vector.h"
 #include "ray.h"
+
 
 class Camera
 {
@@ -34,5 +36,8 @@ public:
 
     Ray windowtoray(const Vec3& v) const;
 };
+
+
+typedef std::shared_ptr<Camera> CameraPtr;
 
 #endif // DEATHRAY_CAMERA_H
