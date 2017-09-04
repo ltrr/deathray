@@ -14,9 +14,8 @@
 #include "sphere.h"
 #include "scene.h"
 #include "raytracer.h"
-#include "rendernormal.h"
-#include "renderdepth.h"
 #include "renderer.h"
+#include "objparser.h"
 using std::string;
 using std::shared_ptr;
 
@@ -44,6 +43,15 @@ int main(int argc, char** argv)
         info.method = RenderMethodPtr(new RayTracer());
     }
     info.num_samples = sd.getsetting<int>("samples", 1);
+
+    //////// TEST ////////////////
+    auto result = parseObj("suzane.obj");
+    for (auto obj : result.objects) {
+        info.scene->addobject(obj);
+    }
+    std::cerr << "obj count: " << result.objects.size() << '\n';
+
+    //////////////////////////////
 
     Renderer renderer;
     Image image(renderer.render(info));

@@ -18,6 +18,9 @@ public:
 
     Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3, MaterialPtr mat);
 
+    Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& normal,
+        MaterialPtr mat);
+
     bool hit(const Ray &ray, float t_min, float t_max, Hit& hit) const;
 };
 

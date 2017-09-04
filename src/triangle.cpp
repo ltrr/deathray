@@ -16,6 +16,16 @@ Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
 }
 
 
+Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
+    const Vec3& normal, MaterialPtr mat)
+    : origin(p1), material(mat), u(p2 - p1), v(p3 - p1)
+{
+    n = unit(cross(u, v));
+    if (dot(n, normal) < 0) n *= -1;
+    //n = unit(normal);
+}
+
+
 bool Triangle::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
 {
     float dn = dot(ray.dir(), n);
