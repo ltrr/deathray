@@ -20,6 +20,7 @@
 #include "shader.h"
 #include "normalshader.h"
 #include "depthshader.h"
+#include "objparser.h"
 using std::string;
 using std::shared_ptr;
 
@@ -211,6 +212,14 @@ struct LuaOp<shared_ptr<T>>
         luaL_setmetatable(L, UserType<T>::name);
         return *addr_;
     }
+
+    static shared_ptr<T> pushuserdata(lua_State *L, shared_ptr<T> p)
+    {
+        void *addr = lua_newuserdata(L, sizeof(shared_ptr<T>));
+        auto *addr_ = new (addr) shared_ptr<T>(p);
+        luaL_setmetatable(L, UserType<T>::name);
+        return *addr_;
+    }
 };
 
 
@@ -355,6 +364,25 @@ static int scene_mktriangle(lua_State* L)   // { p1, p2, p3, material= }
 }
 
 
+static int scene_loadobj(lua_State* L)   // filename
+{
+    string filename(LuaOp<string>::check(L, 1));
+    auto result = parseObj(filename);
+    lua_settop(L, 0);                   //
+
+    if (!result.ok) {
+        luaL_error(L, "error reading mesh from file %s", filename.c_str());
+    }
+
+    lua_createtable(L, result.surfaces.size(), 0);               // table
+    for (int i = 0; i < result.surfaces.size(); i++) {
+        LuaOp<SurfacePtr>::pushuserdata(L, result.surfaces[i]);  // table surf
+        lua_seti(L, 1, i+1);                                     // table
+    }
+    return 1;
+}
+
+
 static int scene_mksky(lua_State* L)   // { zenith, nadir }
 {
     Vec3 zenith, nadir;
@@ -386,25 +414,35 @@ static int scene_mknormalrender(lua_State* L)
 }
 
 
-static int scene_mkscene(lua_State* L)      // { obj1, obj2, ..., bg = }
+static void add_surfaces(lua_State* L, Scene* scene) // ... (table|obj)
 {
-    lua_pushliteral(L, "bg");               // {objs} 'bg'
-    lua_gettable(L, 1);                     // {objs} bg
-    auto bg = LuaOp<BackgroundPtr>::check(L, -1);    // {objs} bg
-    lua_pop(L, 1);                          // {objs}
-
-    lua_len(L, 1);                                      // {objs} len
-    int len = lua_tointeger(L, -1);                     // {objs} len
-    lua_pop(L, 1);                                      // {objs}
-    Scene *newscene = new Scene(bg);
-    for (int i = 1; i <= len; i++) {
-        lua_geti(L, -1, i);                              // {objs}
-        SurfacePtr obj = LuaOp<SurfacePtr>::check(L, -1);  // {objs} obj
-        newscene->addSurface(obj);
-        lua_pop(L, 1);                                   // {objs}
+    if (lua_istable(L, -1)) {                        // ... table
+        lua_len(L, -1);                               // ... table len
+        int len = lua_tointeger(L, -1);              // ... table len
+        lua_pop(L, 1);                               // ... table
+        for (int i = 1; i <= len; i++) {
+            lua_geti(L, -1, i);                      // ... table (table|obj)
+            add_surfaces(L, scene);                  // ... table (table|obj)
+            lua_pop(L, 1);                           // ... table
+        }
     }
-    lua_pop(L, 1);                                       //
-    LuaOp<ScenePtr>::newuserdata(L, newscene);           // scene
+    else if (LuaOp<SurfacePtr>::is(L, -1)) {
+        SurfacePtr obj = LuaOp<SurfacePtr>::check(L, -1);  // table obj
+        scene->addSurface(obj);                            // table obj
+    }
+}
+
+
+static int scene_mkscene(lua_State* L) // { obj1, obj2, {objs}, ..., bg = }
+{
+    lua_pushliteral(L, "bg");                  // {objs} 'bg'
+    lua_gettable(L, 1);                        // {objs} bg
+    auto bg = LuaOp<BackgroundPtr>::check(L, -1);    // {objs} bg
+    lua_pop(L, 1);                             // {objs}
+    Scene *newscene = new Scene(bg);
+    add_surfaces(L, newscene);                 // {objs}
+    lua_settop(L, 0);                          //
+    LuaOp<ScenePtr>::newuserdata(L, newscene); // scene
     return 1;
 }
 
@@ -414,6 +452,7 @@ luaL_Reg scene_lib[] = {
     { "mkviewport", scene_mkviewport },
     { "sphere", scene_mksphere },
     { "triangle", scene_mktriangle },
+    { "loadobj", scene_loadobj },
     { "lambert", scene_mklambert },
     { "metal", scene_mkmetal },
     { "sky", scene_mksky },
@@ -473,7 +512,6 @@ SceneDescription SceneDescription::fromFile(const string& filename)
 template <typename T>
 T SceneDescription::getSetting(const string& name, const T& default_) const
 {
-    //return _getSetting<T>(L, name, default_);
     T val;
     lua_getglobal(L, "_G");           // _G
     lua_pushstring(L, name.c_str());  // _G name

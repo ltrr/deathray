@@ -97,5 +97,6 @@ ObjParserResult parseObj(std::string filename)
         }
     }
 
+    result.ok = true;
     return result;
 }
