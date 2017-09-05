@@ -7,19 +7,21 @@
 class Viewport
 {
 private:
-    int w, h;
+    int width_, height_;
 
 public:
-    Viewport() : w(1), h(1) {}
+    Viewport()
+        : width_(1), height_(1) {}
 
-    Viewport(int w, int h) : w(w), h(h) {}
+    Viewport(int w, int h)
+        : width_(w), height_(h) {}
 
-    int width()  { return w; }
-    int height() { return h; }
+    int width()  { return width_; }
+    int height() { return height_; }
 
-    Vec3 pixeltowindow(float i, float j) const
+    Vec3 pixelToWindow(float i, float j) const
     {
-        return Vec3(j/w, 1 -  i/h, 1);
+        return Vec3(j/width_, 1 -  i/height_, 1);
     }
 };
 

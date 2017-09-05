@@ -1,49 +1,32 @@
 #include "camera.h"
 
 
-
-//// class PerspectiveCamera ////
 PerspectiveCamera::PerspectiveCamera()
-    : origin(0, 0, 0),
-      bottomleft(-1, -1, 0),
-      vertical(0, 2, 0),
-      horizontal(2, 0, 0) {}
+    : origin_(0, 0, 0),
+      bottomleft_(-1, -1, 0),
+      vertical_(0, 2, 0),
+      horizontal_(2, 0, 0) {}
 
 
-PerspectiveCamera::PerspectiveCamera(
-    const Point3& origin,
-    const Vec3& front,
-    const Vec3& up,
-    float fov,
-    float aspect)
+PerspectiveCamera::PerspectiveCamera(const Point3& origin, const Vec3& target,
+    const Vec3& up, float fov, float aspect)
 {
-    Vec3 front_u  = unit(front);
+    Vec3 front_u  = unit(target - origin);
     Vec3 up_u = unit(up - front_u * dot(front_u, up));
     Vec3 right_u = cross(front_u, up_u);
 
     float w = tan(fov/2);
     float h = w / aspect;
 
-    this->origin = origin;
-    this->horizontal = 2 * w * right_u;
-    this->vertical   = 2 * h * up_u;
-    this->bottomleft = front_u - h*up_u - w * right_u;
+    this->origin_ = origin;
+    this->horizontal_ = 2 * w * right_u;
+    this->vertical_   = 2 * h * up_u;
+    this->bottomleft_ = front_u - h*up_u - w * right_u;
 }
 
 
-PerspectiveCamera PerspectiveCamera::lookat(
-    const Point3& origin,
-    const Point3& target,
-    const Vec3& up,
-    float fov,
-    float aspect)
+Ray PerspectiveCamera::windowToRay(const Vec3& uv) const
 {
-    return PerspectiveCamera(origin, target - origin, up, fov, aspect);
-}
-
-
-Ray PerspectiveCamera::windowtoray(const Vec3& uv) const
-{
-    Vec3 target = bottomleft + uv.x * horizontal + uv.y * vertical;
-    return Ray(origin, target);
+    Vec3 target = bottomleft_ + uv.x * horizontal_ + uv.y * vertical_;
+    return Ray(origin_, target);
 }

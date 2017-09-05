@@ -9,7 +9,7 @@
 class Background
 {
 public:
-    virtual Color3f colorat(const Ray& dir) = 0;
+    virtual Color3f colorAt(const Ray& dir) = 0;
 };
 
 

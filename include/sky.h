@@ -14,7 +14,7 @@ public:
     Sky();
     Sky(const Color3f& zenith_, const Color3f& nadir_);
 
-    Color3f colorat(const Ray& ray);
+    Color3f colorAt(const Ray& ray);
 
     inline Color3f zenith() const { return zenith_; }
     inline Color3f nadir() const { return nadir_; }

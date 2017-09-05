@@ -9,32 +9,22 @@
 class Camera
 {
 public:
-    virtual Ray windowtoray(const Vec3& v) const = 0;
+    virtual Ray windowToRay(const Vec3& v) const = 0;
 };
+
 
 class PerspectiveCamera : public Camera
 {
 private:
-    Vec3 origin, front, up, bottomleft, horizontal, vertical;
+    Vec3 origin_, bottomleft_, horizontal_, vertical_;
 
 public:
     PerspectiveCamera();
 
-    PerspectiveCamera(
-        const Point3& origin,  // camera location
-        const Vec3& front,     // front directed vector
-        const Vec3& up,        // upwards directed vector
-        float fov,             // field-of-view angle (horizontal)
-        float aspect);          // screen width/height aspect
+    PerspectiveCamera(const Point3& origin, const Point3& target,
+        const Vec3& up, float fov, float aspect);
 
-    static PerspectiveCamera lookat(
-        const Point3& origin,  // camera location
-        const Point3& target,  // targe
-        const Vec3& up,        // upwards directed vector
-        float fov,             // field-of-view angle (horizontal)
-        float aspect);          // screen width/height aspect
-
-    Ray windowtoray(const Vec3& v) const;
+    Ray windowToRay(const Vec3& v) const;
 };
 
 

@@ -16,7 +16,7 @@ bool Sphere::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
             hit.t = root1;
             hit.point = ray.at(root1);
             hit.normal = unit(hit.point - center_);
-            hit.material = this->material;
+            hit.material = this->material_;
             return true;
         }
         float root2 = (d - b);
@@ -24,7 +24,7 @@ bool Sphere::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
             hit.t = root2;
             hit.point = ray.at(root2);
             hit.normal = unit(hit.point - center_);
-            hit.material = this->material;
+            hit.material = this->material_;
             return true;
         }
     }

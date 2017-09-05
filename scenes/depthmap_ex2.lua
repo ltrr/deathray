@@ -49,7 +49,7 @@ scene = mkscene {
 }
 
 
-method = renderdepth {
+shader = depthshader {
     foreground = { 1, 1, 1 },
     background = { 0, 0, 0 },
     maxdepth = 4

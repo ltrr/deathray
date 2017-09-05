@@ -23,10 +23,10 @@ Image Renderer::render(const RenderInfo& info)
             for (int k = 0; k < info.num_samples; k++) {
                 float id = i + blue[k << 1];
                 float jd = j + blue[(k << 1) + 1];
-                Vec3 uv = info.viewport->pixeltowindow(id, jd);
-                Ray ray = info.camera->windowtoray(uv);
+                Vec3 uv = info.viewport->pixelToWindow(id, jd);
+                Ray ray = info.camera->windowToRay(uv);
                 //TODO: use correct gamma combination
-                color += info.method->colorat(info.scene, ray);
+                color += info.shader->colorAt(info.scene, ray);
             }
             color /= info.num_samples;
             im(i, j) = sqrt(color); // gamma correction

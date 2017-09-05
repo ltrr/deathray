@@ -8,7 +8,7 @@
 struct ObjParserResult
 {
     bool ok;
-    std::vector<ObjectPtr> objects;
+    std::vector<SurfacePtr> surfaces;
 };
 
 

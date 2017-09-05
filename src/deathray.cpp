@@ -7,10 +7,10 @@
 #include "image.h"
 #include "vector.h"
 #include "ray.h"
-#include "scene_description.h"
+#include "scenedescription.h"
 #include "camera.h"
 #include "viewport.h"
-#include "object.h"
+#include "surface.h"
 #include "sphere.h"
 #include "scene.h"
 #include "raytracer.h"
@@ -28,42 +28,34 @@ int main(int argc, char** argv)
     }
 
     // Load settings
-    SceneDescription sd = SceneDescription::fromfile(argv[1]);
+    SceneDescription sd = SceneDescription::fromFile(argv[1]);
 
-    string name = sd.getsetting<string>("name");
-    string type = sd.getsetting<string>("type", "ppm");
-    string codification = sd.getsetting<string>("codification", "binary");
+    string name = sd.getSetting<string>("name");
+    string type = sd.getSetting<string>("type", "ppm");
+    string codification = sd.getSetting<string>("codification", "binary");
 
     RenderInfo info;
-    info.viewport = sd.getsetting<ViewportPtr>("viewport");
-    info.camera   = sd.getsetting<CameraPtr>("camera");
-    info.scene    = sd.getsetting<ScenePtr>("scene");
-    info.method   = sd.getsetting<RenderMethodPtr>("method", nullptr);
-    if (!info.method) {
-        info.method = RenderMethodPtr(new RayTracer());
+    info.viewport = sd.getSetting<ViewportPtr>("viewport");
+    info.camera   = sd.getSetting<CameraPtr>("camera");
+    info.scene    = sd.getSetting<ScenePtr>("scene");
+    info.shader   = sd.getSetting<ShaderPtr>("shader", nullptr);
+    if (!info.shader) {
+        info.shader = ShaderPtr(new RayTracer());
     }
-    info.num_samples = sd.getsetting<int>("samples", 1);
+    info.num_samples = sd.getSetting<int>("samples", 1);
 
-    //////// TEST ////////////////
-    auto result = parseObj("suzane.obj");
-    for (auto obj : result.objects) {
-        info.scene->addobject(obj);
-    }
-    std::cerr << "obj count: " << result.objects.size() << '\n';
-
-    //////////////////////////////
 
     Renderer renderer;
     Image image(renderer.render(info));
 
     if (codification == "binary") {
         std::ofstream out(name, std::ofstream::out | std::ofstream::binary);
-        image.write_ppm_bin(out);
+        image.writePpmBin(out);
         out.close();
     }
     else {
         std::ofstream out(name, std::ofstream::out);
-        image.write_ppm_ascii(out);
+        image.writePpmAscii(out);
         out.close();
     }
     return 0;

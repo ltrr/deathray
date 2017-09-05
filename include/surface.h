@@ -1,5 +1,5 @@
-#ifndef DEATHRAY_OBJECT_H_
-#define DEATHRAY_OBJECT_H_
+#ifndef DEATHRAY_SURFACE_H_
+#define DEATHRAY_SURFACE_H_
 
 #include <memory>
 #include "ray.h"
@@ -14,7 +14,7 @@ struct Hit
 };
 
 
-class Object
+class Surface
 {
 public:
     virtual bool hit(const Ray &ray, float t_min,
@@ -22,6 +22,6 @@ public:
 };
 
 
-typedef std::shared_ptr<Object> ObjectPtr;
+typedef std::shared_ptr<Surface> SurfacePtr;
 
-#endif // DEATHRAY_OBJECT_H_
+#endif // DEATHRAY_SURFACE_H_

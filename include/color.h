@@ -14,7 +14,8 @@ inline uint8_t ftu8(float x)
 
 typedef Vec3 Color3f;
 
-class Color3u {
+class Color3u
+{
 public:
     uint8_t r, g, b;
 

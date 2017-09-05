@@ -4,54 +4,57 @@
 #include <iostream>
 #include "color.h"
 
-class Image {
+class Image
+{
 private:
-    Color3u* data;
-    int h, w;
+    Color3u* data_;
+    int height_, width_;
 
 public:
-    Image(int h, int w) : h(h), w(w)
+    Image(int h, int w)
+        : height_(h), width_(w)
     {
-        data = new Color3u[w * h];
+        data_ = new Color3u[w * h];
+    }
+
+    Image(Image&& other)
+        : height_(other.height_), width_(other.width_), data_(other.data_)
+    {
+        other.data_ = nullptr;
     }
 
     ~Image()
     {
-        delete[] data;
-    }
-
-    Image(Image&& other) : h(other.h), w(other.w), data(other.data)
-    {
-        other.data = nullptr;
+        delete[] data_;
     }
 
     Image& operator= (Image&& other)
     {
         if (this != &other) {
-            delete[] data;
-            w = other.w;
-            h = other.h;
-            data = other.data;
-            other.data = nullptr;
+            delete[] data_;
+            width_ = other.width_;
+            height_ = other.height_;
+            data_ = other.data_;
+            other.data_ = nullptr;
         }
         return *this;
     }
 
     inline Color3u& operator() (int i, int j)
     {
-        return data[w * i + j];
+        return data_[width_ * i + j];
     }
 
     inline Color3u operator() (int i, int j) const
     {
-        return data[w * i + j];
+        return data_[width_ * i + j];
     }
 
-    inline int width() const { return w; }
-    inline int height() const { return h; }
+    inline int width() const { return width_; }
+    inline int height() const { return height_; }
 
-    void write_ppm_ascii(std::ostream& out) const;
-    void write_ppm_bin(std::ostream& out) const;
+    void writePpmAscii(std::ostream& out) const;
+    void writePpmBin(std::ostream& out) const;
 };
 
 #endif // DEATHRAY_IMAGE_HPP_

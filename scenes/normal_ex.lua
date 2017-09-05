@@ -48,4 +48,4 @@ scene = mkscene {
     }
 }
 
-method = rendernormal()
+shader = normalshader()

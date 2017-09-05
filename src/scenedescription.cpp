@@ -1,4 +1,4 @@
-#include "scene_description.h"
+#include "scenedescription.h"
 
 #include <string>
 #include <memory>
@@ -14,12 +14,12 @@
 #include "triangle.h"
 #include "scene.h"
 #include "material.h"
-#include "lambert.h"
+#include "lambertian.h"
 #include "metal.h"
 #include "sky.h"
-#include "rendermethod.h"
-#include "rendernormal.h"
-#include "renderdepth.h"
+#include "shader.h"
+#include "normalshader.h"
+#include "depthshader.h"
 using std::string;
 using std::shared_ptr;
 
@@ -48,9 +48,9 @@ struct UserType<Viewport>
 
 
 template<>
-struct UserType<Object>
+struct UserType<Surface>
 {
-    static constexpr const char* name = "object";
+    static constexpr const char* name = "surface";
 };
 
 
@@ -76,9 +76,9 @@ struct UserType<Background>
 
 
 template<>
-struct UserType<RenderMethod>
+struct UserType<Shader>
 {
-    static constexpr const char* name = "rendermethod";
+    static constexpr const char* name = "shader";
 };
 
 
@@ -289,8 +289,7 @@ static int scene_lookat(lua_State* L)
     getintable(L, 1, "aspect", aspect);
     getintable(L, 1, "fov", fov);
 
-    PerspectiveCamera temp = PerspectiveCamera::lookat(origin, target, up, fov, aspect);
-    LuaOp<CameraPtr>::newuserdata(L, new PerspectiveCamera(temp));
+    LuaOp<CameraPtr>::newuserdata(L, new PerspectiveCamera(origin, target, up, fov, aspect));
     return 1;
 }
 
@@ -311,7 +310,7 @@ static int scene_mklambert(lua_State* L)   // albedo
     Vec3 albedo = LuaOp<Vec3>::check(L, 1); // albedo
     lua_pop(L, 1);                          //
 
-    LuaOp<MaterialPtr>::newuserdata(L, new Lambert(albedo));
+    LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo));
     return 1;
 }
 
@@ -337,7 +336,7 @@ static int scene_mksphere(lua_State* L)   // { center, radius }
     getintable(L, 1, "radius", radius);
     getintable(L, 1, "material", mat);
 
-    LuaOp<ObjectPtr>::newuserdata(L, new Sphere(center, radius, mat));
+    LuaOp<SurfacePtr>::newuserdata(L, new Sphere(center, radius, mat));
     return 1;
 }
 
@@ -351,7 +350,7 @@ static int scene_mktriangle(lua_State* L)   // { p1, p2, p3, material= }
     getintable(L, 1, 3, p3);
     getintable(L, 1, "material", mat);
 
-    LuaOp<ObjectPtr>::newuserdata(L, new Triangle(p1, p2, p3, mat));
+    LuaOp<SurfacePtr>::newuserdata(L, new Triangle(p1, p2, p3, mat));
     return 1;
 }
 
@@ -375,14 +374,14 @@ static int scene_mkdepthrender(lua_State* L)   // { foreground=, background=, ma
     getintable(L, 1, "background", bg, Vec3(0,0,0));
     getintable(L, 1, "maxdepth", maxdepth, 1.0f);
 
-    LuaOp<RenderMethodPtr>::newuserdata(L, new RenderDepth(maxdepth, fg, bg));
+    LuaOp<ShaderPtr>::newuserdata(L, new DepthShader(maxdepth, fg, bg));
     return 1;
 }
 
 
 static int scene_mknormalrender(lua_State* L)
 {
-    LuaOp<RenderMethodPtr>::newuserdata(L, new RenderNormal());
+    LuaOp<ShaderPtr>::newuserdata(L, new NormalShader());
     return 1;
 }
 
@@ -400,8 +399,8 @@ static int scene_mkscene(lua_State* L)      // { obj1, obj2, ..., bg = }
     Scene *newscene = new Scene(bg);
     for (int i = 1; i <= len; i++) {
         lua_geti(L, -1, i);                              // {objs}
-        ObjectPtr obj = LuaOp<ObjectPtr>::check(L, -1);  // {objs} obj
-        newscene->addobject(obj);
+        SurfacePtr obj = LuaOp<SurfacePtr>::check(L, -1);  // {objs} obj
+        newscene->addSurface(obj);
         lua_pop(L, 1);                                   // {objs}
     }
     lua_pop(L, 1);                                       //
@@ -418,8 +417,8 @@ luaL_Reg scene_lib[] = {
     { "lambert", scene_mklambert },
     { "metal", scene_mkmetal },
     { "sky", scene_mksky },
-    { "renderdepth", scene_mkdepthrender },
-    { "rendernormal", scene_mknormalrender },
+    { "depthshader", scene_mkdepthrender },
+    { "normalshader", scene_mknormalrender },
     { "mkscene", scene_mkscene },
     { nullptr, nullptr }
 };
@@ -430,10 +429,10 @@ static int luaopen_scene(lua_State* L)
     LuaOp<ScenePtr>::registerudata(L);
     LuaOp<CameraPtr>::registerudata(L);
     LuaOp<ViewportPtr>::registerudata(L);
-    LuaOp<ObjectPtr>::registerudata(L);
+    LuaOp<SurfacePtr>::registerudata(L);
     LuaOp<MaterialPtr>::registerudata(L);
     LuaOp<BackgroundPtr>::registerudata(L);
-    LuaOp<RenderMethodPtr>::registerudata(L);
+    LuaOp<ShaderPtr>::registerudata(L);
 
     lua_getglobal(L, "_G");           // _G
     luaL_setfuncs(L, scene_lib, 0);   // _G
@@ -455,7 +454,7 @@ SceneDescription::~SceneDescription()
 }
 
 
-SceneDescription SceneDescription::fromfile(const string& filename)
+SceneDescription SceneDescription::fromFile(const string& filename)
 {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
@@ -472,9 +471,9 @@ SceneDescription SceneDescription::fromfile(const string& filename)
 
 
 template <typename T>
-T SceneDescription::getsetting(const string& name, const T& default_) const
+T SceneDescription::getSetting(const string& name, const T& default_) const
 {
-    //return _getsetting<T>(L, name, default_);
+    //return _getSetting<T>(L, name, default_);
     T val;
     lua_getglobal(L, "_G");           // _G
     lua_pushstring(L, name.c_str());  // _G name
@@ -506,7 +505,7 @@ T SceneDescription::getsetting(const string& name, const T& default_) const
 
 
 template <typename T>
-T SceneDescription::getsetting(const string& name) const
+T SceneDescription::getSetting(const string& name) const
 {
     lua_getglobal(L, "_G");           // _G
     lua_pushstring(L, name.c_str());  // _G name
@@ -535,55 +534,55 @@ T SceneDescription::getsetting(const string& name) const
 
 //// Explicit instatiations ////
 template
-string SceneDescription::getsetting(const string& name) const;
+string SceneDescription::getSetting(const string& name) const;
 
 
 template
-string SceneDescription::getsetting(const string& name, const string& default_) const;
+string SceneDescription::getSetting(const string& name, const string& default_) const;
 
 
 template
-float SceneDescription::getsetting(const string& name) const;
+float SceneDescription::getSetting(const string& name) const;
 
 
 template
-float SceneDescription::getsetting(const string& name, const float& default_) const;
+float SceneDescription::getSetting(const string& name, const float& default_) const;
 
 
 template
-int SceneDescription::getsetting(const string& name) const;
+int SceneDescription::getSetting(const string& name) const;
 
 
 template
-int SceneDescription::getsetting(const string& name, const int& default_) const;
+int SceneDescription::getSetting(const string& name, const int& default_) const;
 
 
 template
-Vec3 SceneDescription::getsetting(const string& name) const;
+Vec3 SceneDescription::getSetting(const string& name) const;
 
 
 template
-Vec3 SceneDescription::getsetting(const string& name, const Vec3& default_) const;
+Vec3 SceneDescription::getSetting(const string& name, const Vec3& default_) const;
 
 
 template
-shared_ptr<Camera> SceneDescription::getsetting(const string& name) const;
+shared_ptr<Camera> SceneDescription::getSetting(const string& name) const;
 
 
 template
-shared_ptr<Viewport> SceneDescription::getsetting(const string& name) const;
+shared_ptr<Viewport> SceneDescription::getSetting(const string& name) const;
 
 
 template
-shared_ptr<Object> SceneDescription::getsetting(const string& name) const;
+shared_ptr<Surface> SceneDescription::getSetting(const string& name) const;
 
 
 template
-shared_ptr<Scene> SceneDescription::getsetting(const string& name) const;
+shared_ptr<Scene> SceneDescription::getSetting(const string& name) const;
 
 
 template
-RenderMethodPtr SceneDescription::getsetting(const string& name) const;
+ShaderPtr SceneDescription::getSetting(const string& name) const;
 
 template
-RenderMethodPtr SceneDescription::getsetting(const string& name, const RenderMethodPtr& default_) const;
+ShaderPtr SceneDescription::getSetting(const string& name, const ShaderPtr& default_) const;

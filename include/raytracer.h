@@ -1,15 +1,15 @@
 #ifndef DEATHRAY_RAYTRACER_H_
 #define DEATHRAY_RAYTRACER_H_
 
-#include "rendermethod.h"
+#include "shader.h"
 
 
-class RayTracer : public RenderMethod
+class RayTracer : public Shader
 {
 private:
     int maxdepth_;
 
-    Vec3 colorat_rec(const ScenePtr& scene, const Ray& ray, int depth);
+    Vec3 colorAt_rec(const ScenePtr& scene, const Ray& ray, int depth);
 
 public:
     RayTracer() :
@@ -18,7 +18,7 @@ public:
     RayTracer(int maxdepth_) :
         maxdepth_(maxdepth_) {}
 
-    Vec3 colorat(const ScenePtr& scene, const Ray& ray);
+    Vec3 colorAt(const ScenePtr& scene, const Ray& ray);
 };
 
 #endif // DEATHRAY_RAYTRACER_H_

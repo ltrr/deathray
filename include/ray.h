@@ -3,7 +3,8 @@
 
 #include "vector.h"
 
-class Ray {
+class Ray
+{
 private:
     Point3 origin_;
     Vec3 dir_;

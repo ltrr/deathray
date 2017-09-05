@@ -1,7 +1,7 @@
-#include "renderdepth.h"
+#include "depthshader.h"
 
 
-Vec3 RenderDepth::colorat(const ScenePtr& scene, const Ray& ray)
+Vec3 DepthShader::colorAt(const ScenePtr& scene, const Ray& ray)
 {
     Hit hit;
     if (scene->hit(ray, 0, std::numeric_limits<float>::max(), hit)) {

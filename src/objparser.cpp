@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <string>
 #include <vector>
-#include "lambert.h"
+#include "lambertian.h"
 using std::vector;
 using std::string;
 
@@ -62,7 +62,7 @@ ObjParserResult parseObj(std::string filename)
     vector<Vec3> vns;
     bool smooth = false;
 
-    MaterialPtr mat(new Lambert { Vec3(0.5, 0.5, 0.5) });
+    MaterialPtr mat(new Lambertian { Vec3(0.5, 0.5, 0.5) });
 
     string line, token;
     while (std::getline(in, line)) {
@@ -88,8 +88,8 @@ ObjParserResult parseObj(std::string filename)
 
             while (parseVertexInfo(iss, info)) {
                 Vec3 vertex3 = vs.at(info.vertex_idx - 1);
-                result.objects.push_back(
-                    ObjectPtr(new Triangle(vertex1, vertex2, vertex3, normal1, mat))
+                result.surfaces.push_back(
+                    SurfacePtr(new Triangle(vertex1, vertex2, vertex3, normal1, mat))
                 );
 
                 vertex2 = vertex3;

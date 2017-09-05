@@ -7,9 +7,9 @@
 
 const float PI = acos(-1);
 
-class Vec3;
 
-class Vec3 {
+class Vec3
+{
 public:
     float x, y, z;
 

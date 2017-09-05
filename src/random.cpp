@@ -3,7 +3,7 @@
 #include <random>
 
 
-Point3 rand_unitsphere()
+Point3 rand_on_unit_sphere()
 {
     static std::default_random_engine e{};
     static std::uniform_real_distribution<float> d{-1, 1};

@@ -6,7 +6,7 @@
 #include "camera.h"
 #include "viewport.h"
 #include "image.h"
-#include "rendermethod.h"
+#include "shader.h"
 
 
 struct RenderInfo
@@ -14,7 +14,7 @@ struct RenderInfo
     ScenePtr scene;
     CameraPtr camera;
     ViewportPtr viewport;
-    RenderMethodPtr method;
+    ShaderPtr shader;
     int num_samples = 1;
 };
 
