@@ -45,7 +45,7 @@ public:
         return data_[width_ * i + j];
     }
 
-    inline Color3u operator() (int i, int j) const
+    inline const Color3u& operator() (int i, int j) const
     {
         return data_[width_ * i + j];
     }
