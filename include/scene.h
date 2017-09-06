@@ -5,6 +5,7 @@
 #include <memory>
 #include <limits>
 #include "surface.h"
+#include "light.h"
 #include "background.h"
 
 
@@ -12,6 +13,7 @@ class Scene
 {
 private:
     std::vector<SurfacePtr> surfaces_;
+    std::vector<LightPtr> lights_;
     BackgroundPtr bg_;
 
 public:
@@ -20,9 +22,14 @@ public:
     Scene(BackgroundPtr bg)
         : bg_(bg) {}
 
-    void addSurface(const SurfacePtr& obj)
+    void addSurface(const SurfacePtr& surface)
     {
-        surfaces_.push_back(obj);
+        surfaces_.push_back(surface);
+    }
+
+    void addLight(const LightPtr& light)
+    {
+        lights_.push_back(light);
     }
 
     bool hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
@@ -40,6 +47,10 @@ public:
         }
         return (lower_t != std::numeric_limits<float>::max());
     }
+
+
+    inline const std::vector<LightPtr>& lights() const { return lights_; }
+    inline const std::vector<SurfacePtr>& surfaces() const { return surfaces_; }
 
     inline BackgroundPtr background() const { return bg_; }
     inline BackgroundPtr& background() { return bg_; }

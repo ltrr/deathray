@@ -20,7 +20,11 @@
 #include "shader.h"
 #include "normalshader.h"
 #include "depthshader.h"
+#include "blinnphong.h"
+#include "blinnphongshader.h"
 #include "objparser.h"
+#include "light.h"
+#include "pointlight.h"
 using std::string;
 using std::shared_ptr;
 
@@ -80,6 +84,13 @@ template<>
 struct UserType<Shader>
 {
     static constexpr const char* name = "shader";
+};
+
+
+template<>
+struct UserType<Light>
+{
+    static constexpr const char* name = "light";
 };
 
 
@@ -336,6 +347,21 @@ static int scene_mkmetal(lua_State* L)   // { albedo=, fuzz= }
 }
 
 
+static int scene_mkblinnphong(lua_State* L)   // { albedo=, fuzz= }
+{
+    Vec3 specular, diffuse, ambient;
+    float shiness;
+    getintable(L, 1, "specular", specular, Vec3(0,0,0));
+    getintable(L, 1, "diffuse", diffuse, Vec3(0,0,0));
+    getintable(L, 1, "ambient", ambient, Vec3(0,0,0));
+    getintable(L, 1, "shiness", shiness, 0.0f);
+
+    LuaOp<MaterialPtr>::newuserdata(L,
+        new BlinnPhong(diffuse, specular, ambient, shiness));
+    return 1;
+}
+
+
 static int scene_mksphere(lua_State* L)   // { center, radius }
 {
     Vec3 center;
@@ -383,6 +409,16 @@ static int scene_loadobj(lua_State* L)   // filename
 }
 
 
+static int scene_mkpointlight(lua_State* L)
+{
+    Vec3 position, intensity;
+    getintable(L, 1, "position", position);
+    getintable(L, 1, "intensity", intensity);
+
+    LuaOp<LightPtr>::newuserdata(L, new PointLight(position, intensity));
+    return 1;
+}
+
 static int scene_mksky(lua_State* L)   // { zenith, nadir }
 {
     Vec3 zenith, nadir;
@@ -414,6 +450,13 @@ static int scene_mknormalrender(lua_State* L)
 }
 
 
+static int scene_mkblinnphongshader(lua_State* L)
+{
+    LuaOp<ShaderPtr>::newuserdata(L, new BlinnPhongShader());
+    return 1;
+}
+
+
 static void add_surfaces(lua_State* L, Scene* scene) // ... (table|obj)
 {
     if (lua_istable(L, -1)) {                        // ... table
@@ -427,8 +470,12 @@ static void add_surfaces(lua_State* L, Scene* scene) // ... (table|obj)
         }
     }
     else if (LuaOp<SurfacePtr>::is(L, -1)) {
-        SurfacePtr obj = LuaOp<SurfacePtr>::check(L, -1);  // table obj
-        scene->addSurface(obj);                            // table obj
+        SurfacePtr surface = LuaOp<SurfacePtr>::check(L, -1);  // table surf
+        scene->addSurface(surface);                            // table surf
+    }
+    else if(LuaOp<LightPtr>::is(L, -1)) {
+        LightPtr light = LuaOp<LightPtr>::check(L, -1);        // table light
+        scene->addLight(light);                                // table light
     }
 }
 
@@ -455,9 +502,12 @@ luaL_Reg scene_lib[] = {
     { "loadobj", scene_loadobj },
     { "lambert", scene_mklambert },
     { "metal", scene_mkmetal },
+    { "blinn_phong", scene_mkblinnphong },
     { "sky", scene_mksky },
+    { "pointlight", scene_mkpointlight },
     { "depthshader", scene_mkdepthrender },
     { "normalshader", scene_mknormalrender },
+    { "blinn_phong_shader", scene_mkblinnphongshader },
     { "mkscene", scene_mkscene },
     { nullptr, nullptr }
 };
@@ -472,6 +522,7 @@ static int luaopen_scene(lua_State* L)
     LuaOp<MaterialPtr>::registerudata(L);
     LuaOp<BackgroundPtr>::registerudata(L);
     LuaOp<ShaderPtr>::registerudata(L);
+    LuaOp<LightPtr>::registerudata(L);
 
     lua_getglobal(L, "_G");           // _G
     luaL_setfuncs(L, scene_lib, 0);   // _G
