@@ -3,7 +3,7 @@
 #include "util/blue.h"
 
 
-Image Renderer::render(const RenderInfo& info)
+Image Renderer::render(const RenderInfo& info, ProgressBar& progress)
 {
     float* blue = getblue(info.num_samples);
     if (!blue) {
@@ -14,6 +14,8 @@ Image Renderer::render(const RenderInfo& info)
 
     int rows = info.viewport->height();
     int cols = info.viewport->width();
+
+    int update_period = progress.pixels_per_update();
 
     Image im(rows, cols);
     for (int i = 0; i < rows; i++) {
@@ -29,8 +31,14 @@ Image Renderer::render(const RenderInfo& info)
             }
             color /= info.num_samples;
             im(i, j) = sqrt(color); // gamma correction
+
+            int n = i*cols + j;
+            if (n % update_period == 0) {
+                progress.update(float(i*cols + j) / (rows*cols));
+            }
         }
     }
+    progress.update(1);
 
     return im;
 }

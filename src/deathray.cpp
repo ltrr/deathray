@@ -10,8 +10,10 @@
 #include "scene/scene.h"
 #include "shader/raytracer.h"
 #include "util/image.h"
+#include "util/progressbar.h"
 using std::string;
 using std::shared_ptr;
+
 
 int main(int argc, char** argv)
 {
@@ -38,9 +40,13 @@ int main(int argc, char** argv)
     }
     info.num_samples = sd.getSetting<int>("samples", 1);
 
+    ProgressBar progress;
+    progress.start(argv[1], info);
 
     Renderer renderer;
-    Image image(renderer.render(info));
+    Image image(renderer.render(info, progress));
+
+    progress.finish();
 
     if (codification == "binary") {
         std::ofstream out(name, std::ofstream::out | std::ofstream::binary);

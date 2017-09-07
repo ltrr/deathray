@@ -7,7 +7,10 @@
 #include "scene/viewport.h"
 #include "shader/shader.h"
 #include "util/image.h"
+#include "util/progressbar.h"
 
+
+class ProgressBar;
 
 struct RenderInfo
 {
@@ -22,7 +25,7 @@ struct RenderInfo
 class Renderer
 {
 public:
-    Image render(const RenderInfo& info);
+    Image render(const RenderInfo& info, ProgressBar& progress);
 };
 
 
