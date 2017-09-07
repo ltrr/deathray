@@ -15,6 +15,7 @@ private:
     std::vector<SurfacePtr> surfaces_;
     std::vector<LightPtr> lights_;
     BackgroundPtr bg_;
+    Color3f ambient_;
 
 public:
     Scene() {}
@@ -54,6 +55,9 @@ public:
 
     inline BackgroundPtr background() const { return bg_; }
     inline BackgroundPtr& background() { return bg_; }
+
+    inline Color3f ambient() const { return ambient_; }
+    inline Color3f& ambient() { return ambient_; }
 };
 
 

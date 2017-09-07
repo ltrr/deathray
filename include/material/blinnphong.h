@@ -24,7 +24,8 @@ public:
     Vec3 ambient() { return ambient_; }
     float shiness() { return shiness_; }
 
-
+    bool scatter(const Ray& in, const Hit& hit, Vec3& attenuation,
+                 Ray& scattered);
 };
 
 

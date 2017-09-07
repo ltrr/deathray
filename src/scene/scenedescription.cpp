@@ -16,6 +16,7 @@
 #include "material/blinnphong.h"
 #include "light/light.h"
 #include "light/pointlight.h"
+#include "light/sun.h"
 #include "material/material.h"
 #include "material/lambertian.h"
 #include "material/metal.h"
@@ -419,6 +420,18 @@ static int scene_mkpointlight(lua_State* L)
     return 1;
 }
 
+
+static int scene_mksun(lua_State* L)
+{
+    Vec3 direction, intensity;
+    getintable(L, 1, "direction", direction);
+    getintable(L, 1, "intensity", intensity);
+
+    LuaOp<LightPtr>::newuserdata(L, new Sun(direction, intensity));
+    return 1;
+}
+
+
 static int scene_mksky(lua_State* L)   // { zenith, nadir }
 {
     Vec3 zenith, nadir;
@@ -482,11 +495,17 @@ static void add_surfaces(lua_State* L, Scene* scene) // ... (table|obj)
 
 static int scene_mkscene(lua_State* L) // { obj1, obj2, {objs}, ..., bg = }
 {
+    BackgroundPtr bg;
+    Color3f ambient;
+    getintable(L, 1, "bg", bg);
+    getintable(L, 1, "ambient", ambient, Vec3(0,0,0));
+    /*
     lua_pushliteral(L, "bg");                  // {objs} 'bg'
     lua_gettable(L, 1);                        // {objs} bg
     auto bg = LuaOp<BackgroundPtr>::check(L, -1);    // {objs} bg
-    lua_pop(L, 1);                             // {objs}
+    lua_pop(L, 1);                             // {objs}*/
     Scene *newscene = new Scene(bg);
+    newscene->ambient() = ambient;
     add_surfaces(L, newscene);                 // {objs}
     lua_settop(L, 0);                          //
     LuaOp<ScenePtr>::newuserdata(L, newscene); // scene
@@ -505,6 +524,7 @@ luaL_Reg scene_lib[] = {
     { "blinn_phong", scene_mkblinnphong },
     { "sky", scene_mksky },
     { "pointlight", scene_mkpointlight },
+    { "sun", scene_mksun },
     { "depthshader", scene_mkdepthrender },
     { "normalshader", scene_mknormalrender },
     { "blinn_phong_shader", scene_mkblinnphongshader },
