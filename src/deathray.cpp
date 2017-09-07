@@ -15,16 +15,10 @@ using std::string;
 using std::shared_ptr;
 
 
-int main(int argc, char** argv)
+void render(char* filename)
 {
-    // Check args
-    if (argc != 2) {
-        std::cerr << "usage: deathray scenefile.lua" << std::endl;
-        return 0;
-    }
-
     // Load settings
-    SceneDescription sd = SceneDescription::fromFile(argv[1]);
+    SceneDescription sd = SceneDescription::fromFile(filename);
 
     string name = sd.getSetting<string>("name");
     string type = sd.getSetting<string>("type", "ppm");
@@ -41,7 +35,7 @@ int main(int argc, char** argv)
     info.num_samples = sd.getSetting<int>("samples", 1);
 
     ProgressBar progress;
-    progress.start(argv[1], info);
+    progress.start(filename, info);
 
     Renderer renderer;
     Image image(renderer.render(info, progress));
@@ -58,5 +52,20 @@ int main(int argc, char** argv)
         image.writePpmAscii(out);
         out.close();
     }
+}
+
+
+int main(int argc, char** argv)
+{
+    // Check args
+    if (argc < 2) {
+        std::cerr << "usage: deathray scenefile.lua [...]" << std::endl;
+        return 0;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        render(argv[i]);
+    }
+
     return 0;
 }

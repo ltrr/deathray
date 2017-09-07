@@ -5,7 +5,7 @@ BUILD_DIR := ./build
 LUA_CFLAGS=$(shell pkg-config lua5.3 --cflags)
 LUA_LIBS=$(shell pkg-config lua5.3 --libs)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
-CPPFLAGS := -std=c++11 -g $(INC_FLAGS) $(LUA_CFLAGS) -MMD -MP
+CPPFLAGS := -std=c++11 -g $(INC_FLAGS) $(LUA_CFLAGS) -O2 -MMD -MP
 
 SRCS := $(shell cd $(SRC_DIR); find . -name "*.cpp")
 OBJS := $(addprefix $(BUILD_DIR)/,$(addsuffix .o,$(SRCS)))

@@ -2,11 +2,11 @@
 
 #include <random>
 
+std::knuth_b e{};
+std::uniform_real_distribution<float> d{-1, 1};
 
 Point3 rand_on_unit_sphere()
 {
-    static std::default_random_engine e{};
-    static std::uniform_real_distribution<float> d{-1, 1};
     Point3 p;
     do {
         p = Point3(d(e), d(e), d(e));

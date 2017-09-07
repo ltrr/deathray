@@ -1,8 +1,9 @@
 #include "surface/sphere.h"
-
+#include "util/random.h"
 
 bool Sphere::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
 {
+
     Vec3 diff = ray.origin() - center_;
     // float a = 1; // ray direction is unitary
     float b = dot(diff, ray.dir());  // B/2

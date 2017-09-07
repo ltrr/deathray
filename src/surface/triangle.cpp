@@ -5,8 +5,6 @@
 #include "util/vector.h"
 
 
-const float EPS = 100 * std::numeric_limits<float>::epsilon();
-
 
 Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
     MaterialPtr mat)
@@ -48,7 +46,7 @@ bool Triangle::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
     float su = (ru*vv - rv*uv) / d;
     float sv = (rv*uu - ru*uv) / d;
 
-    if (su >= -EPS && sv >= -EPS && su + sv <= 1+EPS) {
+    if (su >= -EPS && sv >= -10*EPS && su + sv <= 1+EPS) {
         hit.t = t;
         hit.point = ray.at(t);
         hit.normal = unit(dn > 0 ? -n_ : n_);
