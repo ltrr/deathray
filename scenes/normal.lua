@@ -1,27 +1,23 @@
-name = "images/normal_ex.ppm"
-type = "ppm"
-codification = "binary"
 width = 1200
 height = 600
-
-samples = 1
-
-viewport = mkviewport {
-    width = width,
-    height = height
-}
-
-camera = lookat {
-    origin = { 0, 0, 0 },
-    target = { 0, 0, -1 },
-    up = { 0, 1, 0 },
-    fov = 2 * math.atan(2),
-    aspect = width / height
-}
-
 mat = lambert { 0.5, 0.5, 0.5 }
 
 scene = mkscene {
+    shader = normalshader(),
+    output_config = output_config {
+        filename = "images/normal.ppm",
+    },
+    viewport = mkviewport {
+        width = width,
+        height = height
+    },
+    camera = lookat {
+        origin = { 0, 0, 0 },
+        target = { 0, 0, -1 },
+        up = { 0, 1, 0 },
+        fov = 2 * math.atan(2),
+        aspect = width / height
+    },
     sphere {
         center = { 0, -100.5, -3 },
         radius = 99,
@@ -47,5 +43,3 @@ scene = mkscene {
         nadir = { 1, 1, 1 }
     }
 }
-
-shader = normalshader()

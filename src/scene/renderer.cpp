@@ -3,33 +3,37 @@
 #include "util/blue.h"
 
 
-Image Renderer::render(const RenderInfo& info, ProgressBar& progress)
+Image Renderer::render(const ScenePtr& scene, ProgressBar& progress)
 {
-    float* blue = getblue(info.num_samples);
+    auto& viewport = scene->viewport();
+    auto& camera = scene->camera();
+    auto& shader = scene->shader();
+    int sample_count = scene->sampleCount();
+
+    float* blue = getblue(sample_count);
     if (!blue) {
         std::cerr << "error: invalid number of samples ("
-                  << info.num_samples << ")" << std::endl;
+                  << sample_count << ")" << std::endl;
         exit(1);
     }
 
-    int rows = info.viewport->height();
-    int cols = info.viewport->width();
-
+    int rows = viewport->height();
+    int cols = viewport->width();
     int update_period = progress.pixels_per_update();
 
     Image im(rows, cols);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             Color3f color;
-            for (int k = 0; k < info.num_samples; k++) {
+            for (int k = 0; k < sample_count; k++) {
                 float id = i + blue[k << 1];
                 float jd = j + blue[(k << 1) + 1];
-                Vec3 uv = info.viewport->pixelToWindow(id, jd);
-                Ray ray = info.camera->windowToRay(uv);
+                Vec3 uv = viewport->pixelToWindow(id, jd);
+                Ray ray = camera->windowToRay(uv);
                 //TODO: use correct gamma combination
-                color += info.shader->colorAt(info.scene, ray);
+                color += shader->colorAt(scene, ray);
             }
-            color /= info.num_samples;
+            color /= sample_count;
             im(i, j) = sqrt(color); // gamma correction
 
             int n = i*cols + j;

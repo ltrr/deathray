@@ -1,27 +1,27 @@
-name = "images/depthmap_ex1.ppm"
-type = "ppm"
-codification = "binary"
 width = 1200
 height = 600
-
-samples = 1
-
-viewport = mkviewport {
-    width = width,
-    height = height
-}
-
-camera = lookat {
-    origin = { 0, 0, 0 },
-    target = { 0, 0, -1 },
-    up = { 0, 1, 0 },
-    fov = 2 * math.atan(2),
-    aspect = width / height
-}
-
 mat = lambert { 0.5, 0.5, 0.5 }
 
 scene = mkscene {
+    output_config = output_config {
+        filename = "images/depthmap0.ppm",
+    },
+    shader = depthshader {
+        foreground = { 0, 0, 0 },
+        background = { 1, 1, 1 },
+        maxdepth = 4
+    },
+    viewport = mkviewport {
+        width = width,
+        height = height
+    },
+    camera = lookat {
+        origin = { 0, 0, 0 },
+        target = { 0, 0, -1 },
+        up = { 0, 1, 0 },
+        fov = 2 * math.atan(2),
+        aspect = width / height
+    },
     sphere {
         center = { 0, -100.5, -3 },
         radius = 99,
@@ -46,11 +46,4 @@ scene = mkscene {
         zenith = { 1, 1, 1 },
         nadir = { 0, 0, 0 }
     }
-}
-
-
-shader = depthshader {
-    foreground = { 0, 0, 0 },
-    background = { 1, 1, 1 },
-    maxdepth = 4
 }

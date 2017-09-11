@@ -1,24 +1,5 @@
-name = "images/pyramid.ppm"
-type = "ppm"
-codification = "binary"
 width = 400
 height = 400
-
-
-samples = 16
-
-viewport = mkviewport {
-    width = width,
-    height = height
-}
-
-camera = lookat {
-    origin = { 2, 2, 2 },
-    target = { 0, 0, 0 },
-    up = { 0, 0, 1 },
-    fov = math.pi / 3,
-    aspect = width / height
-}
 
 ptop = { 0, 0, 4 }
 pfl  = { -1, -1, 0 }
@@ -32,6 +13,21 @@ gbl  = { -2, 2, 0 }
 gbr  = { 2, 2, 0 }
 
 scene = mkscene {
+    output_config = output_config {
+        filename = "images/pyramid.ppm",
+    },
+    samples = 16,
+    viewport = mkviewport {
+        width = width,
+        height = height
+    },
+    camera = lookat {
+        origin = { 2, 2, 2 },
+        target = { 0, 0, 0 },
+        up = { 0, 0, 1 },
+        fov = math.pi / 3,
+        aspect = width / height
+    },
     triangle {
         ptop, pfl, pfr,
         material = lambert { 0.8, 0.8, 0.8 }
@@ -60,5 +56,5 @@ scene = mkscene {
     bg = sky {
         zenith = { 1, 1, 1 },
         nadir = { 0, 0, 0 }
-    }
+    },
 }

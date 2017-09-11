@@ -2,10 +2,8 @@
 #define DEATHRAY_PROGRESSBAR_H_
 
 #include <chrono>
-#include "scene/renderer.h"
+#include "scene/scene.h"
 
-
-struct RenderInfo;
 
 class ProgressBar {
 private:
@@ -14,7 +12,7 @@ private:
     int pixels_per_update_;
 
 public:
-    void start(std::string filename, const RenderInfo& info);
+    void start(const ScenePtr& info);
     void update(float progress);
     void finish();
 

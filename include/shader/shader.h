@@ -5,6 +5,8 @@
 #include "scene/scene.h"
 #include "util/ray.h"
 
+class Scene;
+typedef std::shared_ptr<Scene> ScenePtr;
 
 class Shader
 {

@@ -20,35 +20,40 @@ void render(char* filename)
     // Load settings
     SceneDescription sd = SceneDescription::fromFile(filename);
 
+    /*
     string name = sd.getSetting<string>("name");
     string type = sd.getSetting<string>("type", "ppm");
     string codification = sd.getSetting<string>("codification", "binary");
+    */
 
     RenderInfo info;
-    info.viewport = sd.getSetting<ViewportPtr>("viewport");
-    info.camera   = sd.getSetting<CameraPtr>("camera");
+    //info.viewport = sd.getSetting<ViewportPtr>("viewport");
+    //info.camera   = sd.getSetting<CameraPtr>("camera");
     info.scene    = sd.getSetting<ScenePtr>("scene");
     info.shader   = sd.getSetting<ShaderPtr>("shader", nullptr);
     if (!info.shader) {
         info.shader = ShaderPtr(new RayTracer());
     }
-    info.num_samples = sd.getSetting<int>("samples", 1);
+    //info.num_samples = sd.getSetting<int>("samples", 1);
 
     ProgressBar progress;
-    progress.start(filename, info);
+    progress.start(info.scene);
 
     Renderer renderer;
-    Image image(renderer.render(info, progress));
+    Image image(renderer.render(info.scene, progress));
 
     progress.finish();
 
-    if (codification == "binary") {
-        std::ofstream out(name, std::ofstream::out | std::ofstream::binary);
+
+    auto& config = info.scene->outputConfig();
+
+    if (config->codification == ImageCodification::BINARY) {
+        std::ofstream out(config->filename, std::ofstream::out | std::ofstream::binary);
         image.writePpmBin(out);
         out.close();
     }
     else {
-        std::ofstream out(name, std::ofstream::out);
+        std::ofstream out(config->filename, std::ofstream::out);
         image.writePpmAscii(out);
         out.close();
     }

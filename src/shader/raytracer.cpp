@@ -8,25 +8,28 @@
 Vec3 RayTracer::colorAt_rec(const ScenePtr& scene, const Ray& ray, int depth)
 {
     if (depth > maxdepth_) {
-        return Vec3(1, 0, 0);
+        return Vec3(0, 0, 0);
     }
 
     Hit hit;
-    if (scene->hit(ray, EPS, std::numeric_limits<float>::max(), hit)) {
+    if (scene->hit(ray, 100*EPS, std::numeric_limits<float>::max(), hit)) {
         Vec3 attenuation;
         Ray scattered;
 
         if(hit.material->scatter(ray, hit, attenuation, scattered)) {
             //return .5*(scattered.dir() + Vec3(1,1,1));
             //if (depth < 1)
+            //return attenuation * colorAt_rec(scene, scattered, depth+1);
             return attenuation * colorAt_rec(scene, scattered, depth+1);
             //else return Vec3(0,0,1);
+            //return Vec3(0,1,0);
         }
         else {
-            return Vec3(0, 1, 0);
+            return Vec3(0, 0, 0);
         }
     }
     else {
+        //return Vec3(0,1,0);
         return scene->background()->colorAt(ray);
     }
 }

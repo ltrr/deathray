@@ -1,25 +1,21 @@
-name = "images/unitsphere.ppm"
-type = "ppm"
-codification = "binary"
 width = 400
 height = 400
 
-samples = 1
-
-viewport = mkviewport {
-    width = width,
-    height = height
-}
-
-camera = lookat {
-    origin = { 0, 2, 0 },
-    target = { 0, 0, 0 },
-    up = { 0, 0, 1 },
-    fov =  math.pi / 2,
-    aspect = width / height
-}
-
 scene = mkscene {
+    output_config = output_config {
+        filename = "images/unitsphere.ppm",
+    },
+    viewport = mkviewport {
+        width = width,
+        height = height
+    },
+    camera = lookat {
+        origin = { 0, 2, 0 },
+        target = { 0, 0, 0 },
+        up = { 0, 0, 1 },
+        fov =  math.pi / 2,
+        aspect = width / height
+    },
     sphere {
         center = {0,0,0},
         radius = 1,

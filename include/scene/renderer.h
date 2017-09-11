@@ -25,7 +25,7 @@ struct RenderInfo
 class Renderer
 {
 public:
-    Image render(const RenderInfo& info, ProgressBar& progress);
+    Image render(const ScenePtr& info, ProgressBar& progress);
 };
 
 

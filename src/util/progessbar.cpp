@@ -5,17 +5,18 @@
 using namespace std::chrono;
 
 
-void ProgressBar::start(std::string filename, const RenderInfo& info)
+//void ProgressBar::start(std::string filename, const RenderInfo& info)
+void ProgressBar::start(const ScenePtr& scene)
 {
     start_point = system_clock::now();
-    auto& vp = info.viewport;
+    auto& vp = scene->viewport();
     pixels_per_update_ = (vp->width() * vp->height()) / 200;
 
     std::ios_base::sync_with_stdio(false);
 
-    std::cout << "Rendering " << filename << "\n"
-              << "(" << info.scene->surfaces().size() << " surfaces, "
-              << info.scene->lights().size() << " lights)" << std::endl;
+    std::cout << "Rendering " << scene->outputConfig()->filename << "\n"
+              << "(" << scene->surfaces().size() << " surfaces, "
+              << scene->lights().size() << " lights)" << std::endl;
 }
 
 
