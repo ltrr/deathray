@@ -39,11 +39,12 @@ void render(char* filename)
     ProgressBar progress;
     progress.start(info.scene);
 
+    std::cerr << "ns = " << info.scene->sampleCount() << '\n';
+
     Renderer renderer;
     Image image(renderer.render(info.scene, progress));
 
     progress.finish();
-
 
     auto& config = info.scene->outputConfig();
 

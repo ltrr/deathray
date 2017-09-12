@@ -17,7 +17,8 @@ Vec3 RayTracer::colorAt_rec(const ScenePtr& scene, const Ray& ray, int depth)
         Ray scattered;
 
         if(hit.material->scatter(ray, hit, attenuation, scattered)) {
-            return attenuation * colorAt_rec(scene, scattered, depth+1);
+            return attenuation * colorAt_rec(scene, scattered, depth+1)
+                + hit.material->emission();
         }
         else {
             return Vec3(0, 0, 0);

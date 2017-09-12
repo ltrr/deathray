@@ -1,5 +1,7 @@
 #include "util/blue.h"
 
+#include "util/random.h"
+
 // blue noise sampling patterns
 float blue1[] = { 0, 0 };
 
@@ -150,7 +152,11 @@ float* getblue(int ns)
             return blue32;
         case 64:
             return blue64;
-        default:
-            return nullptr;
     }
+
+    float *b = new float[2*ns];
+    for (int i = 0; i < 2*ns; i++) {
+        b[i] = randf() - 0.5;
+    }
+    return b;
 }

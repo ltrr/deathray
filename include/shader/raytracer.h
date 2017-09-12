@@ -13,7 +13,7 @@ private:
 
 public:
     RayTracer() :
-        maxdepth_(40) {}
+        maxdepth_(3) {}
 
     RayTracer(int maxdepth_) :
         maxdepth_(maxdepth_) {}

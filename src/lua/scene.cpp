@@ -47,22 +47,32 @@ int scene_mkviewport(lua_State* L)  // { width=, height= }
 
 int scene_mklambert(lua_State* L)   // albedo
 {
-    Vec3 albedo = LuaOp<Vec3>::check(L, 1); // albedo
-    lua_pop(L, 1);                          //
+    if (LuaOp<Vec3>::is(L, 1)) {
+        Vec3 albedo = LuaOp<Vec3>::check(L, 1); // albedo
+        lua_pop(L, 1);                          //
+        LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo));
+    }
+    else {
+        Vec3 albedo, emission;
+        getintable(L, 1, "albedo", albedo);
+        getintable(L, 1, "emission", emission, Vec3(0,0,0));
+        lua_pop(L, 1);                          //
+        LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo, emission));
+    }
 
-    LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo));
     return 1;
 }
 
 
 int scene_mkmetal(lua_State* L)   // { albedo=, fuzz= }
 {
-    Vec3 albedo;
+    Vec3 albedo, emission;
     float fuzz;
     getintable(L, 1, "albedo", albedo);
     getintable(L, 1, "fuzz", fuzz, 0.0f);
+    getintable(L, 1, "emission", emission, Vec3(0,0,0));
 
-    LuaOp<MaterialPtr>::newuserdata(L, new Metal(albedo, fuzz));
+    LuaOp<MaterialPtr>::newuserdata(L, new Metal(albedo, fuzz, emission));
     return 1;
 }
 
