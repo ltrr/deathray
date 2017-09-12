@@ -3,6 +3,7 @@
 #include <type_traits>
 #include "background/sky.h"
 #include "surface/sphere.h"
+#include "surface/spherevolume.h"
 #include "surface/triangle.h"
 #include "material/blinnphong.h"
 #include "light/pointlight.h"
@@ -101,6 +102,21 @@ int scene_mksphere(lua_State* L)   // { center, radius }
     getintable(L, 1, "material", mat);
 
     LuaOp<SurfacePtr>::newuserdata(L, new Sphere(center, radius, mat));
+    return 1;
+}
+
+
+int scene_mkspherevolume(lua_State* L)   // { center, radius }
+{
+    Vec3 center;
+    float radius, d;
+    MaterialPtr mat;
+    getintable(L, 1, "center", center);
+    getintable(L, 1, "radius", radius);
+    getintable(L, 1, "density", d);
+    getintable(L, 1, "material", mat);
+
+    LuaOp<SurfacePtr>::newuserdata(L, new SphereVolume(center, radius, d, mat));
     return 1;
 }
 
@@ -287,6 +303,7 @@ luaL_Reg scene_lib[] = {
     { "lookat", scene_lookat },
     { "mkviewport", scene_mkviewport },
     { "sphere", scene_mksphere },
+    { "sphere_volume", scene_mkspherevolume },
     { "triangle", scene_mktriangle },
     { "loadobj", scene_loadobj },
     { "lambert", scene_mklambert },
