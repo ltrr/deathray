@@ -10,6 +10,7 @@
 #include "lua/op.h"
 #include "material/lambertian.h"
 #include "material/metal.h"
+#include "material/dieletric.h"
 #include "shader/normalshader.h"
 #include "shader/depthshader.h"
 #include "shader/raytracer.h"
@@ -61,6 +62,16 @@ int scene_mkmetal(lua_State* L)   // { albedo=, fuzz= }
     getintable(L, 1, "fuzz", fuzz, 0.0f);
 
     LuaOp<MaterialPtr>::newuserdata(L, new Metal(albedo, fuzz));
+    return 1;
+}
+
+
+int scene_mkdieletric(lua_State* L)   // { albedo=, fuzz= }
+{
+    float ref_idx;
+    getintable(L, 1, "ref_idx", ref_idx);
+
+    LuaOp<MaterialPtr>::newuserdata(L, new Dieletric(ref_idx));
     return 1;
 }
 
@@ -279,6 +290,7 @@ luaL_Reg scene_lib[] = {
     { "triangle", scene_mktriangle },
     { "loadobj", scene_loadobj },
     { "lambert", scene_mklambert },
+    { "dieletric", scene_mkdieletric },
     { "metal", scene_mkmetal },
     { "blinn_phong", scene_mkblinnphong },
     { "sky", scene_mksky },

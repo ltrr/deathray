@@ -3,6 +3,7 @@
 
 #include "util/vector.h"
 
+float randf();
 
 Point3 rand_on_unit_sphere();
 

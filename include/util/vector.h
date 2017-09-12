@@ -51,6 +51,7 @@ inline Vec3 cross(const Vec3& v1, const Vec3& v2);
 inline float angle(const Vec3& v1, const Vec3& v2);
 inline Vec3 sqrt(const Vec3& v);
 inline Vec3 reflect(const Vec3& v, const Vec3& n);
+inline bool refract(const Vec3& v, const Vec3& n, float ni_nt, Vec3& refracted);
 
 typedef Vec3 Point3;
 

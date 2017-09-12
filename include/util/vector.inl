@@ -159,3 +159,16 @@ inline Vec3 reflect(const Vec3& v, const Vec3& n)
 {
     return v - 2 * dot(v, n) * n;
 }
+
+
+inline bool refract(const Vec3& v, const Vec3& n, float ni_nt,
+    Vec3& refracted)
+{
+    float dt = dot(v, n);
+    float disc = 1.0f - ni_nt*ni_nt*(1-dt*dt);
+    if (disc > 0) {
+        refracted = ni_nt*(v - n*dt) - n*sqrt(disc);
+        return true;
+    }
+    return false;
+}
