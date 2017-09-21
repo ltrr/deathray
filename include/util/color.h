@@ -27,7 +27,7 @@ public:
         : r(r), g(g), b(b) {}
 
     Color3u(const Vec3& v)
-        : r(ftu8(v.x)), g(ftu8(v.y)), b(ftu8(v.z)) {}
+        : r(ftu8(v.x())), g(ftu8(v.y())), b(ftu8(v.z())) {}
 };
 
 #endif // DEATHRAY_COLOR_H_

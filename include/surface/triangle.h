@@ -13,8 +13,9 @@ private:
     MaterialPtr material_;
 
 public:
-    Triangle() :
-        origin_(0,0,0), u_(1,0,0), v_(0,1,0), n_(0,0,1) {}
+    Triangle()
+        : origin_(0,0,0), u_(1,0,0), v_(0,1,0), n_(0,0,1),
+          Surface({{0,0,0}, {1,1,1}}) {}
 
     Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3, MaterialPtr mat);
 

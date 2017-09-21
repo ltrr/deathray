@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "material/material.h"
+#include "util/bbox.h"
 #include "util/ray.h"
 
 
@@ -18,6 +19,14 @@ struct Hit
 class Surface
 {
 public:
+    BBox bbox;
+
+    Surface()
+        : bbox() {}
+
+    Surface(const BBox& bbox)
+        : bbox(bbox) {}
+
     virtual bool hit(const Ray &ray, float t_min,
                      float t_max, Hit& hit) const = 0;
 };

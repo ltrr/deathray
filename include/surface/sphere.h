@@ -16,10 +16,11 @@ private:
 
 public:
     Sphere()
-        : center_(0,0,0), radius_(1.0) {}
+        : center_(0,0,0), radius_(1.0), Surface({{-1,-1,-1}, {1,1,1}}) {}
 
-    Sphere(Vec3 center, float radius, const MaterialPtr& mat)
-        : center_(center), radius_(radius), material_(mat) {}
+    Sphere(Vec3 center, float r, const MaterialPtr& mat)
+        : center_(center), radius_(r), material_(mat),
+          Surface({center-Vec3(r, r, r), center+Vec3(r, r, r)}) {}
 
     inline Point3 center() const { return center_; }
     inline float radius() const { return radius_; }

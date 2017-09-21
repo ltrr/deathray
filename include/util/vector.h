@@ -12,11 +12,26 @@ const float EPS = std::numeric_limits<float>::epsilon();
 
 class Vec3
 {
-public:
-    float x, y, z;
+private:
+    float e[3];
 
-    Vec3() : x(0.0), y(0.0), z(0.0) {}
-    Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+public:
+    Vec3()
+        : e {0.0, 0.0, 0.0} {}
+
+    Vec3(float x, float y, float z)
+        : e {x, y, z} {}
+
+    inline float& x() { return e[0]; }
+    inline float& y() { return e[1]; }
+    inline float& z() { return e[2]; }
+
+    inline const float& x() const { return e[0]; }
+    inline const float& y() const { return e[1]; }
+    inline const float& z() const { return e[2]; }
+
+    inline float& operator[](int idx) { return e[idx]; }
+    inline const float& operator[](int idx) const { return e[idx]; }
 
     inline Vec3 operator+() const;
     inline Vec3 operator-() const;
@@ -52,6 +67,8 @@ inline float angle(const Vec3& v1, const Vec3& v2);
 inline Vec3 sqrt(const Vec3& v);
 inline Vec3 reflect(const Vec3& v, const Vec3& n);
 inline bool refract(const Vec3& v, const Vec3& n, float ni_nt, Vec3& refracted);
+inline Vec3 min(const Vec3& v1, const Vec3& v2);
+inline Vec3 max(const Vec3& v1, const Vec3& v2);
 
 typedef Vec3 Point3;
 

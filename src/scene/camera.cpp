@@ -27,6 +27,6 @@ PerspectiveCamera::PerspectiveCamera(const Point3& origin, const Vec3& target,
 
 Ray PerspectiveCamera::windowToRay(const Vec3& uv) const
 {
-    Vec3 target = bottomleft_ + uv.x * horizontal_ + uv.y * vertical_;
+    Vec3 target = bottomleft_ + uv.x() * horizontal_ + uv.y() * vertical_;
     return Ray(origin_, target);
 }

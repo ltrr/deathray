@@ -8,7 +8,8 @@
 
 Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
     MaterialPtr mat)
-    : origin_(p1), material_(mat), u_(p2 - p1), v_(p3 - p1)
+    : origin_(p1), material_(mat), u_(p2 - p1), v_(p3 - p1),
+      Surface({ min(p1, min(p2, p3)), max(p1, max(p2, p3)) })
 {
     n_ = unit(cross(u_, v_));
 }
@@ -16,7 +17,8 @@ Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
 
 Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
     const Vec3& normal, MaterialPtr mat)
-    : origin_(p1), material_(mat), u_(p2 - p1), v_(p3 - p1)
+    : origin_(p1), material_(mat), u_(p2 - p1), v_(p3 - p1),
+      Surface({min(p1, min(p2, p3)), max(p1, max(p2, p3))})
 {
     n_ = unit(cross(u_, v_));
     if (dot(n_, normal) < 0) n_ *= -1;
