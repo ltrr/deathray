@@ -12,10 +12,12 @@
 #include "material/lambertian.h"
 #include "material/metal.h"
 #include "material/dieletric.h"
+#include "material/toon.h"
 #include "shader/normalshader.h"
 #include "shader/depthshader.h"
 #include "shader/raytracer.h"
 #include "shader/blinnphongshader.h"
+#include "shader/toonshader.h"
 #include "util/objparser.h"
 using std::string;
 
@@ -83,6 +85,32 @@ int scene_mkdieletric(lua_State* L)   // { albedo=, fuzz= }
     getintable(L, 1, "ref_idx", ref_idx);
 
     LuaOp<MaterialPtr>::newuserdata(L, new Dieletric(ref_idx));
+    return 1;
+}
+
+
+int scene_mktoon(lua_State* L)
+{
+    std::vector<Color3f> colors;
+    std::vector<float> cuts;
+
+    lua_len(L, 1);                              // table len
+    int len = lua_tointeger(L, -1);              // table len
+    lua_pop(L, 1);                               // table
+
+    Color3f color;
+    float cut;
+
+    getintable(L, 1, 1, color);
+    colors.push_back(color);
+    for (int i = 2; i <= len; i += 2) {
+        getintable(L, 1, i, cut);
+        cuts.push_back(cut);
+        getintable(L, 1, i+1, color);
+        colors.push_back(color);
+    }
+
+    LuaOp<MaterialPtr>::newuserdata(L, new Toon(colors, cuts));
     return 1;
 }
 
@@ -224,6 +252,13 @@ int scene_mkblinnphongshader(lua_State* L)
 }
 
 
+int scene_mktoonshader(lua_State* L)
+{
+    LuaOp<ShaderPtr>::newuserdata(L, new ToonShader());
+    return 1;
+}
+
+
 int scene_mkoutputconfig(lua_State* L)
 {
     string file, format, codif;
@@ -320,11 +355,13 @@ luaL_Reg scene_lib[] = {
     { "dieletric", scene_mkdieletric },
     { "metal", scene_mkmetal },
     { "blinn_phong", scene_mkblinnphong },
+    { "toon", scene_mktoon },
     { "sky", scene_mksky },
     { "pointlight", scene_mkpointlight },
     { "sun", scene_mksun },
     { "depthshader", scene_mkdepthrender },
     { "normalshader", scene_mknormalrender },
+    { "toon_shader", scene_mktoonshader },
     { "blinn_phong_shader", scene_mkblinnphongshader },
     { "mkscene", scene_mkscene },
     { "output_config", scene_mkoutputconfig },
