@@ -21,6 +21,8 @@ Image Renderer::render(const ScenePtr& scene, ProgressBar& progress)
     int cols = viewport->width();
     int update_period = progress.pixels_per_update();
 
+    scene->accelerate();
+
     Image im(rows, cols);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {

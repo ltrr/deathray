@@ -9,6 +9,7 @@
 #include "scene/renderer.h"
 #include "scene/scene.h"
 #include "shader/raytracer.h"
+#include "shader/debug.h"
 #include "util/image.h"
 #include "util/progressbar.h"
 using std::string;
@@ -31,9 +32,10 @@ void render(char* filename)
     //info.camera   = sd.getSetting<CameraPtr>("camera");
     info.scene    = sd.getSetting<ScenePtr>("scene");
     info.shader   = sd.getSetting<ShaderPtr>("shader", nullptr);
-    if (!info.shader) {
-        info.shader = ShaderPtr(new RayTracer());
-    }
+    //if (!info.shader) {
+    //    info.shader = ShaderPtr(new RayTracer());
+    //}
+    //info.scene->shader() = ShaderPtr(new DebugShader);
     //info.num_samples = sd.getSetting<int>("samples", 1);
 
     ProgressBar progress;

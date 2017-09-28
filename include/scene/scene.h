@@ -4,6 +4,7 @@
 #include <limits>
 #include <memory>
 #include <vector>
+#include "accel/bvh.h"
 #include "background/background.h"
 #include "light/light.h"
 #include "surface/surface.h"
@@ -21,6 +22,8 @@ class Scene
 private:
     std::vector<SurfacePtr> surfaces_;
     std::vector<LightPtr> lights_;
+
+    BVHPtr accel_;
 
     ViewportPtr viewport_;
     CameraPtr camera_;
@@ -45,8 +48,16 @@ public:
         lights_.push_back(light);
     }
 
+    void accelerate()
+    {
+        accel_ = BVHPtr(new BVH(surfaces_));
+    }
+
     bool hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
     {
+        if (accel_) {
+            return accel_->hit(ray, t_min, t_max, hit);
+        }
         float lower_t = std::numeric_limits<float>::max();
         Hit temp_hit;
 
