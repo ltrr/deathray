@@ -7,6 +7,7 @@
 #include "surface/triangle.h"
 #include "material/blinnphong.h"
 #include "light/pointlight.h"
+#include "light/spotlight.h"
 #include "light/sun.h"
 #include "lua/op.h"
 #include "material/lambertian.h"
@@ -203,6 +204,23 @@ int scene_mkpointlight(lua_State* L)
 }
 
 
+int scene_mkspotlight(lua_State* L)
+{
+    Vec3 position, direction, intensity;
+    float angle, decay;
+
+    getintable(L, 1, "position", position);
+    getintable(L, 1, "direction", direction);
+    getintable(L, 1, "intensity", intensity);
+    getintable(L, 1, "angle", angle);
+    getintable(L, 1, "decay", decay, 1.0f);
+
+    LuaOp<LightPtr>::newuserdata(L, new SpotLight(position, direction,
+        intensity, angle, decay));
+    return 1;
+}
+
+
 int scene_mksun(lua_State* L)
 {
     Vec3 direction, intensity;
@@ -357,6 +375,7 @@ luaL_Reg scene_lib[] = {
     { "blinn_phong", scene_mkblinnphong },
     { "toon", scene_mktoon },
     { "sky", scene_mksky },
+    { "spotlight", scene_mkspotlight },
     { "pointlight", scene_mkpointlight },
     { "sun", scene_mksun },
     { "depthshader", scene_mkdepthrender },
