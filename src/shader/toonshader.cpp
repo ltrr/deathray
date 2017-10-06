@@ -17,8 +17,9 @@ Vec3 ToonShader::colorAt(const ScenePtr& scene, const Ray& ray)
                 100*EPS, std::numeric_limits<float>::max(), shit)) {
                 continue;
             }
-
-            color = max(color, hit.material->toon(hit.normal, pointToLight));
+            Vec3 subcol = light->radianceAt(hit.point) *
+                hit.material->toon(hit.normal, pointToLight);
+            color = max(color, subcol);
         }
         return color;
     }
