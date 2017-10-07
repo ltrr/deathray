@@ -1,26 +1,34 @@
 #include "shader/blinnphongshader.h"
 
+#include <memory>
+#include <typeinfo>
+#include "material/blinnphong.h"
 
 Vec3 BlinnPhongShader::colorAt(const ScenePtr& scene, const Ray& ray)
 {
+    float error;
     Hit hit, shit;
-    if (scene->hit(ray, 0, std::numeric_limits<float>::max(), hit)) {
-        Color3f color(hit.material->ambient() * scene->ambient());
-        for (auto light : scene->lights()) {
-            Vec3 pointToLight = light->directionFrom(hit.point);
+    if (scene->hit(ray, hit, error)) {
 
-            if (scene->hit(
-                Ray(hit.point, pointToLight),
-                1000*EPS, std::numeric_limits<float>::max(), shit)) {
+        auto bp_mat = std::dynamic_pointer_cast<BlinnPhongMaterial>(hit.material);
+        if (!bp_mat) {
+            std::cerr << "ERROR: Atempted to use unkown material"
+                      << "as Blinn-Phong material" << std::endl;
+            throw std::bad_cast();
+        }
+
+        Color3f color(bp_mat->ambient() * scene->ambient());
+        for (auto light : scene->lights()) {
+            Ray pointToLight = light->rayFrom(hit.point + 0.0001*hit.normal);
+            if (scene->hit(pointToLight, shit, error)) {
                 continue;
             }
+            float diff = max(0.0f, dot(pointToLight.dir(), hit.normal));
+            Vec3 half = unit(pointToLight.dir() - ray.dir());
+            float spec = pow(dot(half, hit.normal), bp_mat->shininess());
 
-            float cos_nl = max(0.0f, dot(pointToLight, hit.normal));
-            Vec3 half = unit(pointToLight - ray.dir());
-
-            color += light->radianceAt(hit.point) * (
-                hit.material->specular() * pow(dot(half, hit.normal), hit.material->shiness())
-            + hit.material->diffuse() * cos_nl);
+            color += light->radianceAt(hit.point)
+                * (bp_mat->specular() * spec + bp_mat->diffuse() * diff);
         }
         return color;
     }

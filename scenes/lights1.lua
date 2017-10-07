@@ -4,14 +4,14 @@ height = 600
 scene = mkscene {
     shader = blinn_phong_shader(),
     output_config = output_config {
-        filename = "images/blinnphong8.ppm",
+        filename = "images/lights1.ppm",
     },
     viewport = mkviewport {
         width = width,
         height = height
     },
     camera = lookat {
-        origin = { 0, 0, 0 },
+        origin = { 0, 0, 1 },
         target = { 0, 0, -1 },
         up = { 0, 1, 0 },
         fov = 2 * math.atan(2),
@@ -41,9 +41,8 @@ scene = mkscene {
             shininess = 64
         }
     },
-    sun {
-        direction = { 20, 10, 5 },
+    pointlight {
+        position = { 2, 1, .5 },
         intensity = { 1, 1, 1 }
     },
-    ambient = { 0.4, 0.4, 0.4 }
 }

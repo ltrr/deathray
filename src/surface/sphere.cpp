@@ -1,9 +1,9 @@
 #include "surface/sphere.h"
-#include "util/random.h"
+#include "util/math.h"
 
-bool Sphere::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
+
+bool Sphere::hit(const Ray &ray, Hit& hit, float& error) const
 {
-
     Vec3 diff = ray.origin() - center_;
     // float a = 1; // ray direction is unitary
     float b = dot(diff, ray.dir());  // B/2
@@ -13,16 +13,18 @@ bool Sphere::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
     if (delta >= 0) {
         float d = sqrt(delta);
         float root1 = -(d + b);
-        if (t_min < root1 && root1 <= t_max) {
+        if (ray.over(root1)) {
             hit.t = root1;
+            error = root1 * 1e-4f;
             hit.point = ray.at(root1);
             hit.normal = unit(hit.point - center_);
             hit.material = this->material_;
             return true;
         }
         float root2 = (d - b);
-        if (t_min < root2 && root2 <= t_max) {
+        if (ray.over(root2)) {
             hit.t = root2;
+            error = root2 * 1e-4f;
             hit.point = ray.at(root2);
             hit.normal = unit(hit.point - center_);
             hit.material = this->material_;

@@ -1,7 +1,6 @@
 #ifndef DEATHRAY_SCENE_H_
 #define DEATHRAY_SCENE_H_
 
-#include <limits>
 #include <memory>
 #include <vector>
 #include "accel/bvh.h"
@@ -11,6 +10,7 @@
 #include "scene/camera.h"
 #include "scene/viewport.h"
 #include "shader/shader.h"
+#include "util/math.h"
 #include "util/outputconfig.h"
 
 
@@ -53,23 +53,23 @@ public:
         accel_ = BVHPtr(new BVH(surfaces_));
     }
 
-    bool hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
+    bool hit(const Ray &ray, Hit& hit, float& error) const
     {
         if (accel_) {
-            return accel_->hit(ray, t_min, t_max, hit);
+            return accel_->hit(ray, hit, error);
         }
-        float lower_t = std::numeric_limits<float>::max();
+        float lower_t = FLOAT_INF;
         Hit temp_hit;
 
         for (auto obj : surfaces_) {
-            if (obj->hit(ray, t_min, t_max, temp_hit)) {
+            if (obj->hit(ray, temp_hit, error)) {
                 if (temp_hit.t < lower_t) {
                     lower_t = temp_hit.t;
                     hit = temp_hit;
                 }
             }
         }
-        return (lower_t != std::numeric_limits<float>::max());
+        return (lower_t != FLOAT_INF);
     }
 
 

@@ -11,41 +11,39 @@ float schlick(float cos_, float ref_idx) {
 }
 
 
-bool Dieletric::scatter(const Ray& in, const Hit& hit, Vec3& attenuation,
-                      Ray& scattered)
+bool Dieletric::scatter(const Vec3& in, const Hit& hit, Vec3& scattered) const
 {
     Vec3 out_n;
     float ni_nt;
     float refl_prob;
     float cos_;
 
-    float inc = dot(in.dir(), hit.normal);
+    float inc = dot(in, hit.normal);
     if (inc > 0) {
         out_n = -hit.normal;
         ni_nt = refract_index_;
-        cos_ = refract_index_ * inc / len(in.dir());
+        cos_ = refract_index_ * inc / len(in);
     }
     else {
         out_n = hit.normal;
         ni_nt = 1.0 / refract_index_;
-        cos_ = (-inc / len(in.dir()));
+        cos_ = (-inc / len(in));
     }
-    attenuation = Vec3(1,1,1);
 
     Vec3 refracted;
-    if (refract(in.dir(), out_n, ni_nt, refracted)) {
+    if (refract(in, out_n, ni_nt, refracted)) {
         refl_prob = schlick(cos_, refract_index_);
     }
     else {
-        scattered = Ray(hit.point, reflect(in.dir(), hit.normal));
+        scattered = reflect(in, hit.normal);
         return true;
     }
 
     if (randf() < refl_prob) {
-        scattered = Ray(hit.point, reflect(in.dir(), hit.normal));
+        scattered = reflect(in, hit.normal);
     }
     else {
-        scattered = Ray(hit.point, refracted);
+        scattered = refracted;
     }
     return true;
 }

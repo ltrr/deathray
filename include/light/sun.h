@@ -17,12 +17,12 @@ public:
     Sun(const Vec3& dir, const Point3& intensity)
         : direction_(unit(dir)), intensity_(intensity) {}
 
-    Color3f radianceAt(const Point3& p) {
+    Color3f radianceAt(const Point3& p) const {
         return intensity_;
     }
 
-    Vec3 directionFrom(const Point3& p) {
-        return direction_;
+    Ray rayFrom(const Point3& p) const {
+        return Ray(p, direction_);
     }
 };
 

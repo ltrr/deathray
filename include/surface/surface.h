@@ -4,16 +4,8 @@
 #include <memory>
 #include "material/material.h"
 #include "util/bbox.h"
+#include "util/hit.h"
 #include "util/ray.h"
-
-
-struct Hit
-{
-    float t;
-    Point3 point;
-    Vec3 normal;
-    MaterialPtr material;
-};
 
 
 class Surface
@@ -27,8 +19,9 @@ public:
     Surface(const BBox& bbox)
         : bbox(bbox) {}
 
-    virtual bool hit(const Ray &ray, float t_min,
-                     float t_max, Hit& hit) const = 0;
+    virtual ~Surface() { }
+
+    virtual bool hit(const Ray &ray, Hit& hit, float& error) const = 0;
 };
 
 

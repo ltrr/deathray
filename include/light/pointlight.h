@@ -17,12 +17,14 @@ public:
     PointLight(const Point3& pos, const Point3& intensity)
         : position_(pos), intensity_(intensity) {}
 
-    Color3f radianceAt(const Point3& p) {
+    Color3f radianceAt(const Point3& p) const {
         return intensity_ / len2(p - position_);
     }
 
-    Vec3 directionFrom(const Point3& p) {
-        return unit(position_ - p);
+    Ray rayFrom(const Point3& p) const {
+        Vec3 delta = position_ - p;
+        float delta_len = len(delta);
+        return Ray(p, (1/delta_len) * delta, 0.f, delta_len);
     }
 };
 

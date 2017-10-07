@@ -11,6 +11,8 @@ typedef std::shared_ptr<Scene> ScenePtr;
 class Shader
 {
 public:
+    virtual ~Shader() { }
+
     virtual Vec3 colorAt(const ScenePtr& scene, const Ray& ray) = 0;
 };
 

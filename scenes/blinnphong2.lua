@@ -27,7 +27,7 @@ scene = mkscene {
         material = blinn_phong {
             diffuse = {0.4, 0.4, 0.4},
             specular = {1, 1, 1},
-            shiness = 5
+            shininess = 5
         }
     },
     sphere {

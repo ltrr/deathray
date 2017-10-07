@@ -4,13 +4,15 @@
 #include <memory>
 #include "util/color.h"
 #include "util/vector.h"
+#include "util/ray.h"
 
 
 class Light
 {
 public:
-    virtual Color3f radianceAt(const Point3& p) = 0;
-    virtual Vec3 directionFrom(const Point3& p) = 0;
+    virtual ~Light() { }
+    virtual Color3f radianceAt(const Point3& p) const = 0;
+    virtual Ray rayFrom(const Point3& p) const = 0;
 };
 
 typedef std::shared_ptr<Light> LightPtr;

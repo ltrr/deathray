@@ -47,9 +47,7 @@ BVH::~BVH()
 }
 
 
-
-static bool hit_R(const BVH::Tree *node, const Ray &ray, float t_min,
-    float t_max, Hit& hit)
+static bool hit_R(const BVH::Tree *node, const Ray &ray, Hit& hit, float& error)
 {
     Hit temp_hit;
     if (!node)
@@ -59,24 +57,24 @@ static bool hit_R(const BVH::Tree *node, const Ray &ray, float t_min,
         return false;
 
     if (node->surface)
-        return node->surface->hit(ray, t_min, t_max, hit);
+        return node->surface->hit(ray, hit, error);
 
     bool hit_left, hit_right;
-    hit_left = hit_R(node->left, ray, t_min, t_max, hit);
+    hit_left = hit_R(node->left, ray, hit, error);
 
     if (hit_left) {
-        hit_right = hit_R(node->right, ray, t_min, t_max, temp_hit);
+        hit_right = hit_R(node->right, ray, temp_hit, error);
         if (hit_right && temp_hit.t < hit.t)
             hit = temp_hit;
         return true;
     }
     else {
-        return hit_R(node->right, ray, t_min, t_max, hit);
+        return hit_R(node->right, ray, hit, error);
     }
 }
 
 
-bool BVH::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
+bool BVH::hit(const Ray &ray, Hit& hit, float& error) const
 {
-    return hit_R(root_, ray, t_min, t_max, hit);
+    return hit_R(root_, ray, hit, error);
 }

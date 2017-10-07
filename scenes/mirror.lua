@@ -2,9 +2,9 @@ width = 1200
 height = 600
 
 scene = mkscene {
-    shader = blinn_phong_shader(),
+    samples = 64,
     output_config = output_config {
-        filename = "images/blinnphong5.ppm",
+        filename = "images/mirror.ppm",
     },
     viewport = mkviewport {
         width = width,
@@ -22,25 +22,13 @@ scene = mkscene {
         nadir = { 1, 1, 1 }
     },
     sphere {
-        center = { 0, -100.5, -1 },
+        center = { 0, -100.5, -3 },
         radius = 100,
-        material = blinn_phong {
-            diffuse = {0.4, 0.4, 0.4},
-            specular = {1, 1, 1},
-            shininess = 5
-        }
+        material = metal { albedo = { 0.5, 0.5, 0.5 } }
     },
     sphere {
         center = { 0, 0, -1 },
-        radius = 0.4,
-        material = blinn_phong {
-            diffuse = {0.0, 0.3, 0.8},
-            specular = {0.9, 0.9, 0.9},
-            shininess = 32
-        }
-    },
-    sun {
-        direction = { 20, 10, 5 },
-        intensity = { 1, 1, 1 }
+        radius = 0.5,
+        material = lambert { 0.5, 0.5, 0.5 }
     },
 }

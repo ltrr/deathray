@@ -33,12 +33,15 @@ scene = mkscene {
         radius = 0.4,
         material = mat
     },
+    --[[
     sun {
         direction = { 20, 10, 5 },
         intensity = { 1, 1, 1 }
     },
+    --]]
     pointlight {
-        position = { 0, 2, -1 },
+        position = { 2, 0, 0 },
         intensity = { 1, 1, 1 }
     },
+
 }

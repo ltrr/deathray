@@ -9,6 +9,8 @@
 class Camera
 {
 public:
+    virtual ~Camera() { }
+
     virtual Ray windowToRay(const Vec3& v) const = 0;
 };
 

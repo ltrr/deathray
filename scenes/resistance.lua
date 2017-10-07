@@ -4,7 +4,7 @@ height = 960
 
 -- scene configuration
 scene = {
-    samples = 64,
+    samples = 1,
     output_config = output_config {
         filename = "images/resistance.ppm",
     },

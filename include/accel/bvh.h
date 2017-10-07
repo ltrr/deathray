@@ -30,7 +30,7 @@ public:
 
     ~BVH();
 
-    bool hit(const Ray &ray, float t_min, float t_max, Hit& hit) const;
+    bool hit(const Ray &ray, Hit& hit, float& error) const;
 };
 
 

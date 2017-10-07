@@ -5,11 +5,9 @@
 #include "util/ray.h"
 
 
-bool Metal::scatter(const Ray& in, const Hit& hit, Vec3& attenuation,
-                    Ray& scattered)
+bool Metal::scatter(const Vec3& in, const Hit& hit, Vec3& scattered) const
 {
-    Vec3 ref = reflect(in.dir(), hit.normal);
-    scattered = Ray(hit.point, ref + fuzz_*rand_on_unit_sphere());
-    attenuation = albedo_;
-    return (dot(scattered.dir(), hit.normal) > 0);
+    Vec3 ref = reflect(in, hit.normal);
+    scattered = ref + fuzz_ * rand_on_unit_sphere();
+    return (dot(scattered, hit.normal) > 0);
 }

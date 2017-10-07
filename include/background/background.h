@@ -9,6 +9,8 @@
 class Background
 {
 public:
+    virtual ~Background() { }
+
     virtual Color3f colorAt(const Ray& dir) = 0;
 };
 

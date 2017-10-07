@@ -1,10 +1,10 @@
-#ifndef DEATHRAY_DIELETRIC_H_
-#define DEATHRAY_DIELETRIC_H_
+#ifndef DEATHRAY_MATERIAL_DIELETRIC_H_
+#define DEATHRAY_MATERIAL_DIELETRIC_H_
 
-#include "material/material.h"
+#include "material/raytracematerial.h"
 
 
-class Dieletric : public Material
+class Dieletric : public RaytraceMaterial
 {
 private:
     float refract_index_;
@@ -16,8 +16,7 @@ public:
     Dieletric(float ref_ind)
         : refract_index_(ref_ind) {}
 
-    bool scatter(const Ray& in, const Hit& hit, Vec3& attenuation,
-                 Ray& scattered);
+    bool scatter(const Vec3& in, const Hit& hit, Vec3& scattered) const;
 };
 
-#endif // DEATHRAY_DIELETRIC_H_
+#endif // DEATHRAY_MATERIAL_DIELETRIC_H_

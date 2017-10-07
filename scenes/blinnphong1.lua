@@ -28,7 +28,7 @@ scene = mkscene {
             ambient = {0.1, 0.1, 0.1},
             diffuse = {0.4, 0.4, 0.4},
             specular = {1, 1, 1},
-            shiness = 5
+            shininess = 5
         }
     },
     sphere {
@@ -38,7 +38,7 @@ scene = mkscene {
             ambient = {0.1, 0.1, 0.1},
             diffuse = {0.0, 0.3, 0.8},
             specular = {0.9, 0.9, 0.9},
-            shiness = 64
+            shininess = 64
         }
     },
     ambient = { 0.4, 0.4, 0.4 }

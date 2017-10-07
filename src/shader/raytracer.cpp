@@ -1,6 +1,6 @@
 #include "shader/raytracer.h"
 
-#include <limits>
+#include "material/raytracematerial.h"
 #include "scene/scene.h"
 #include "util/ray.h"
 
@@ -12,13 +12,22 @@ Vec3 RayTracer::colorAt_rec(const ScenePtr& scene, const Ray& ray, int depth)
     }
 
     Hit hit;
-    if (scene->hit(ray, 1000*EPS, std::numeric_limits<float>::max(), hit)) {
+    float error;
+    if (scene->hit(ray, hit, error)) {
         Vec3 attenuation;
-        Ray scattered;
+        Vec3 scattered;
 
-        if(hit.material->scatter(ray, hit, attenuation, scattered)) {
-            return attenuation * colorAt_rec(scene, scattered, depth+1)
-                + hit.material->emission();
+        auto rt_mat = std::dynamic_pointer_cast<RaytraceMaterial>(hit.material);
+        if (!rt_mat) {
+            std::cerr << "ERROR: Atempted to use unkown material"
+                      << "as raytracer material" << std::endl;
+            throw std::bad_cast();
+        }
+
+        if(rt_mat->scatter(ray.dir(), hit, scattered)) {
+            Ray r(hit.point, scattered, error);
+            return rt_mat->albedo(hit) * colorAt_rec(scene, r, depth+1)
+                   + rt_mat->emission(hit);
         }
         else {
             return Vec3(0, 0, 0);

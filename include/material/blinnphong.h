@@ -1,32 +1,29 @@
-#ifndef DEATHRAY_BLINNPHONG_H_
-#define DEATHRAY_BLINNPHONG_H_
+#ifndef DEATHRAY_MATERIAL_BLINNPHONG_H_
+#define DEATHRAY_MATERIAL_BLINNPHONG_H_
 
 #include "material/material.h"
 
 
-class BlinnPhong : public Material
+class BlinnPhongMaterial : public Material
 {
 private:
     Vec3 diffuse_, specular_, ambient_;
-    float shiness_;
+    float shininess_;
 
 public:
-    BlinnPhong()
-        : diffuse_(0,0,0), specular_(0,0,0), ambient_(0,0,0), shiness_(0) {}
+    BlinnPhongMaterial()
+        : diffuse_(0,0,0), specular_(0,0,0), ambient_(0,0,0), shininess_(0) {}
 
-        BlinnPhong(const Vec3& diffuse, const Vec3& specular,
-            const Vec3& ambient, float shiness)
-            : diffuse_(diffuse), specular_(specular), ambient_(ambient),
-              shiness_(shiness) {}
+    BlinnPhongMaterial(const Vec3& diffuse, const Vec3& specular,
+        const Vec3& ambient, float shininess)
+        : diffuse_(diffuse), specular_(specular), ambient_(ambient),
+          shininess_(shininess) { }
 
     Vec3 diffuse() { return diffuse_; }
     Vec3 specular() { return specular_; }
     Vec3 ambient() { return ambient_; }
-    float shiness() { return shiness_; }
-
-    bool scatter(const Ray& in, const Hit& hit, Vec3& attenuation,
-                 Ray& scattered);
+    float shininess() { return shininess_; }
 };
 
 
-#endif // DEATHRAY_BLINNPHONG_H_
+#endif // DEATHRAY_MATERIAL_BLINNPHONG_H_

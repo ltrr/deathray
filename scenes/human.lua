@@ -1,15 +1,15 @@
-width = 400
-height = 400
+width = 1920
+height = 960
 
 scene = mkscene {
     samples = 64,
     output_config = output_config {
-        filename = "images/mesh.ppm",
+        filename = "images/human.ppm",
     },
-    loadobj("assets/mesh/suzane.obj"),
+    loadobj("assets/mesh/human.obj"),
     camera = lookat {
-        origin = { -1.5, 0.5, 1.5 },
-        target = { 0, 0, 0 },
+        origin = { 10, 10, 10 },
+        target = { 0, 10, 0 },
         up = { 0, 1, 0 },
         fov = math.pi * 0.5,
         aspect = width / height

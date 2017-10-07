@@ -4,10 +4,8 @@
 #include "util/random.h"
 
 
-bool Lambertian::scatter(const Ray& in, const Hit& hit, Vec3& attenuation,
-                      Ray& scattered)
+bool Lambertian::scatter(const Vec3& in, const Hit& hit, Vec3& scattered) const
 {
-    attenuation = albedo_;
-    scattered = Ray(hit.point, hit.normal + rand_on_unit_sphere());
+    scattered = hit.normal + rand_on_unit_sphere();
     return true;
 }

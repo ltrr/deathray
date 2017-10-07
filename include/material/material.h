@@ -5,22 +5,10 @@
 #include "util/vector.h"
 
 
-class Ray;
-class Hit;
-
-
 class Material
 {
 public:
-    virtual Vec3 diffuse() { return Vec3(0,0,0); }
-    virtual Vec3 specular() { return Vec3(0,0,0); }
-    virtual Vec3 ambient() { return Vec3(0,0,0); }
-    virtual Vec3 emission() { return Vec3(0,0,0); }
-    virtual float shiness() { return 0; }
-    virtual Vec3 toon(const Vec3& n, const Vec3& l) { return Vec3(0,0,0); }
-
-    virtual bool scatter(const Ray& in, const Hit& hit,
-                         Vec3& attenuation, Ray& scattered) {};
+    virtual ~Material() { }
 };
 
 

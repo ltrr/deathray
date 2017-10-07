@@ -1,10 +1,10 @@
-#ifndef DEATHRAY_METAL_H_
-#define DEATHRAY_METAL_H_
+#ifndef DEATHRAY_MATERIAL_METAL_H_
+#define DEATHRAY_MATERIAL_METAL_H_
 
-#include "material/material.h"
+#include "material/raytracematerial.h"
 
 
-class Metal : public Material
+class Metal : public RaytraceMaterial
 {
 private:
     Vec3 albedo_, emission_;
@@ -20,10 +20,10 @@ public:
     Metal(const Vec3& albedo, float fuzz, const Vec3& emission)
         : albedo_(albedo), fuzz_(fuzz), emission_(emission) {}
 
-    bool scatter(const Ray& in, const Hit& hit, Vec3& attenuation,
-                 Ray& scattered);
+    bool scatter(const Vec3& in, const Hit& hit, Vec3& scattered) const;
 
-    virtual Vec3 emission() { return emission_; }
+    Vec3 albedo() const { return albedo_; }
+    Vec3 emission() const { return emission_; }
 };
 
-#endif // DEATHRAY_METAL_H_
+#endif // DEATHRAY_MATERIAL_METAL_H_

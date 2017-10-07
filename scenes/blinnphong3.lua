@@ -27,7 +27,7 @@ scene = mkscene {
         material = blinn_phong {
             specular = {1, 1, 1},
             diffuse = {0.4, 0.4, 0.4},
-            shiness = 5
+            shininess = 5
         }
     },
     sphere {
@@ -35,7 +35,7 @@ scene = mkscene {
         radius = 0.4,
         material = blinn_phong {
             specular = {0.9, 0.9, 0.9},
-            shiness = 64
+            shininess = 64
         }
     },
     sun {

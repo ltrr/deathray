@@ -26,7 +26,7 @@ public:
     inline Point3 center() const { return center_; }
     inline float radius() const { return radius_; }
 
-    bool hit(const Ray &ray, float t_min, float t_max, Hit& hit) const;
+    bool hit(const Ray &ray, Hit& hit, float& error) const;
 };
 
 #endif // DEATHRAY_SPHEREVOLUME_H_

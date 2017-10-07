@@ -111,7 +111,7 @@ int scene_mktoon(lua_State* L)
         colors.push_back(color);
     }
 
-    LuaOp<MaterialPtr>::newuserdata(L, new Toon(colors, cuts));
+    LuaOp<MaterialPtr>::newuserdata(L, new ToonMaterial(colors, cuts));
     return 1;
 }
 
@@ -119,14 +119,14 @@ int scene_mktoon(lua_State* L)
 int scene_mkblinnphong(lua_State* L)   // { albedo=, fuzz= }
 {
     Vec3 specular, diffuse, ambient;
-    float shiness;
+    float shininess;
     getintable(L, 1, "specular", specular, Vec3(0,0,0));
     getintable(L, 1, "diffuse", diffuse, Vec3(0,0,0));
     getintable(L, 1, "ambient", ambient, Vec3(0,0,0));
-    getintable(L, 1, "shiness", shiness, 0.0f);
+    getintable(L, 1, "shininess", shininess, 0.0f);
 
     LuaOp<MaterialPtr>::newuserdata(L,
-        new BlinnPhong(diffuse, specular, ambient, shiness));
+        new BlinnPhongMaterial(diffuse, specular, ambient, shininess));
     return 1;
 }
 

@@ -21,20 +21,21 @@ public:
         : position_(pos), direction_(unit(dir)), intensity_(intensity),
           angle_cos_(cos(angle)), decay_(decay) {}
 
-    Color3f radianceAt(const Point3& p)
+    Color3f radianceAt(const Point3& p) const
     {
-        float proj = -dot(directionFrom(p), direction_);
-        if(fabs(proj) < angle_cos_) {
+        float proj = dot(unit(p - position_), direction_);
+        if(proj < angle_cos_) {
             return Vec3();
         }
-        //std::cerr << proj << '\n';
         return pow(proj, decay_) * intensity_ / len2(p - position_);
-        //return proj * intensity_ / len2(p - position_);
+        //return {1,0,0};
     }
 
-    Vec3 directionFrom(const Point3& p)
+    Ray rayFrom(const Point3& p) const
     {
-        return unit(position_ - p);
+        Vec3 delta = position_ - p;
+        float delta_len = len(delta);
+        return Ray(p, (1/delta_len) * delta, 0.f, delta_len);
     }
 };
 

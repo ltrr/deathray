@@ -1,9 +1,8 @@
 #include "surface/triangle.h"
 
-#include <limits>
+#include "util/math.h"
 #include "util/ray.h"
 #include "util/vector.h"
-
 
 
 Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
@@ -25,7 +24,7 @@ Triangle::Triangle(const Vec3& p1, const Vec3& p2, const Vec3& p3,
 }
 
 
-bool Triangle::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
+bool Triangle::hit(const Ray &ray, Hit& hit, float& error) const
 {
     float dn = dot(ray.dir(), n_);
     if (dn == 0) // parallel
@@ -33,7 +32,7 @@ bool Triangle::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
 
     float t = dot(origin_ - ray.origin(), n_) / dn;
 
-    if (!(t_min < t && t <= t_max))
+    if (!ray.over(t))
         return false;
 
     Vec3 r = ray.at(t) - origin_;
@@ -48,11 +47,12 @@ bool Triangle::hit(const Ray &ray, float t_min, float t_max, Hit& hit) const
     float su = (ru*vv - rv*uv) / d;
     float sv = (rv*uu - ru*uv) / d;
 
-    if (su >= -EPS && sv >= -10*EPS && su + sv <= 1+EPS) {
+    if (su >= -EPS && sv >= -10*FLOAT_EPS && su + sv <= 1+FLOAT_EPS) {
         hit.t = t;
         hit.point = ray.at(t);
         hit.normal = unit(dn > 0 ? -n_ : n_);
         hit.material = material_;
+        error = t * 1e-3f;
         return true;
     }
     else {
