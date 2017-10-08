@@ -2,7 +2,7 @@ width = 1200
 height = 300
 
 scene = mkscene {
-    shader = blinn_phong_shader(),
+    shader = shader.blinnphong(),
     output_config = output_config {
         filename = "images/spotlight0.ppm",
     },
@@ -24,41 +24,41 @@ scene = mkscene {
     sphere {
         center = { 0, -100, 1 },
         radius = 100,
-        material = blinn_phong {
+        material = blinnphong {
             diffuse = {0.4, 0.4, 0.4},
             specular = {1, 1, 1},
             shininess = 5
         }
     },
-    spotlight {
+    light.spot {
         position = { 4, 1, 1 },
         direction = { 0, -1, 0 },
         intensity = { .5, .5, .5 },
         angle = 0.7,
         decay = 1,
     },
-    spotlight {
+    light.spot {
         position = { 2, 1, 1 },
         direction = { 0, -1, 0 },
         intensity = { .5, .5, .5 },
         angle = 0.7,
         decay = 3,
     },
-    spotlight {
+    light.spot {
         position = { 0, 1, 1 },
         direction = { 0, -1, 0 },
         intensity = { .5, .5, .5 },
         angle = 0.7,
         decay = 10,
     },
-    spotlight {
+    light.spot {
         position = { -2, 1, 1 },
         direction = { 0, -1, 0 },
         intensity = { .5, .5, .5 },
         angle = 0.7,
         decay = 30,
     },
-    spotlight {
+    light.spot {
         position = { -4, 1, 1 },
         direction = { 0, -1, 0 },
         intensity = { .5, .5, .5 },

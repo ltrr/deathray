@@ -17,23 +17,23 @@ scene = mkscene {
         fov = math.pi / 2,
         aspect = width / height
     },
-    sphere_volume {
+    spherevolume {
         center = {0,0,0},
         radius = 0.5,
         density = 0.1,
-        material = lambert { 0.8, 0.5, 0.5 }
+        material = lambertian { 0.8, 0.5, 0.5 }
     },
-    sphere_volume {
+    spherevolume {
         center = {0,0,1},
         radius = 0.5,
         density = 1,
-        material = lambert { 0.3, 0.8, 0.3 }
+        material = lambertian { 0.3, 0.8, 0.3 }
     },
-    sphere_volume {
+    spherevolume {
         center = {0,0,-1},
         radius = 0.5,
         density = 10,
-        material = lambert { 0.3, 0.3, 0.8 }
+        material = lambertian { 0.3, 0.3, 0.8 }
     },
     sphere {
         center = {0,-100.5,0},

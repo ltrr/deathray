@@ -20,7 +20,7 @@ scene = mkscene {
     sphere {
         center = {0,0,0},
         radius = 0.5,
-        material = lambert {
+        material = lambertian {
             albedo = { 0.8, 0.5, 0.5 },
             emission = { 0.5, 0.5, 0.5 }
         }
@@ -28,12 +28,12 @@ scene = mkscene {
     sphere {
         center = {0,0,1},
         radius = 0.5,
-        material = lambert { 0.3, 0.8, 0.3 }
+        material = lambertian { 0.3, 0.8, 0.3 }
     },
     sphere {
         center = {0,0,-1},
         radius = 0.5,
-        material = lambert { 0.3, 0.3, 0.8 }
+        material = lambertian { 0.3, 0.3, 0.8 }
     },
     sphere {
         center = {0,-100.5,0},

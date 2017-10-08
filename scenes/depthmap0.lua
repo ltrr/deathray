@@ -1,12 +1,12 @@
 width = 1200
 height = 600
-mat = lambert { 0.5, 0.5, 0.5 }
+mat = lambertian { 0.5, 0.5, 0.5 }
 
 scene = mkscene {
     output_config = output_config {
         filename = "images/depthmap0.ppm",
     },
-    shader = depthshader {
+    shader = shader.depth {
         foreground = { 0, 0, 0 },
         background = { 1, 1, 1 },
         maxdepth = 4

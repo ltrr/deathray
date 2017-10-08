@@ -1,12 +1,12 @@
 width = 800
 height = 400
 
-mat = lambert { 0.8, 0.2, 0.2 }
+mat = lambertian { 0.8, 0.2, 0.2 }
 
 n = 40
 
 scene = {
-    samples = 64,
+    samples = 8,
     output_config = output_config {
         filename = "images/snakes.ppm",
     },
@@ -46,7 +46,7 @@ for j=1,k do
         scene[#scene+1] = sphere {
             center = { j, y, z },
             radius = 0.5,
-            material = lambert {
+            material = lambertian {
                 (j-1) / k, 0, 1 - ((j-1) / k)
             }
         }
@@ -54,7 +54,7 @@ for j=1,k do
         scene[#scene+1] = sphere {
             center = { j, 4 - y, z },
             radius = 0.5,
-            material = lambert {
+            material = lambertian {
                 0, 1 - ((j-1) / k), (j-1) / k
             }
         }

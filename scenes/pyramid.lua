@@ -30,19 +30,19 @@ scene = mkscene {
     },
     triangle {
         ptop, pfl, pfr,
-        material = lambert { 0.8, 0.8, 0.8 }
+        material = lambertian { 0.8, 0.8, 0.8 }
     },
     triangle {
         ptop, pfr, pbr,
-        material = lambert { 0.5, 0.8, 0.8 }
+        material = lambertian { 0.5, 0.8, 0.8 }
     },
     triangle {
         ptop, pbr, pbl,
-        material = lambert { 0.8, 0.8, 0.5 }
+        material = lambertian { 0.8, 0.8, 0.5 }
     },
     triangle {
         ptop, pbl, pfl,
-        material = lambert { 0.8, 0.5, 0.8 }
+        material = lambertian { 0.8, 0.5, 0.8 }
     },
 
     triangle {

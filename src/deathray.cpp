@@ -20,35 +20,19 @@ void render(char* filename)
 {
     // Load settings
     SceneDescription sd = SceneDescription::fromFile(filename);
-
-    /*
-    string name = sd.getSetting<string>("name");
-    string type = sd.getSetting<string>("type", "ppm");
-    string codification = sd.getSetting<string>("codification", "binary");
-    */
-
-    RenderInfo info;
-    //info.viewport = sd.getSetting<ViewportPtr>("viewport");
-    //info.camera   = sd.getSetting<CameraPtr>("camera");
-    info.scene    = sd.getSetting<ScenePtr>("scene");
-    info.shader   = sd.getSetting<ShaderPtr>("shader", nullptr);
-    //if (!info.shader) {
-    //    info.shader = ShaderPtr(new RayTracer());
-    //}
-    //info.scene->shader() = ShaderPtr(new DebugShader);
-    //info.num_samples = sd.getSetting<int>("samples", 1);
+    auto scene = sd.getSetting<ScenePtr>("scene");
 
     ProgressBar progress;
-    progress.start(info.scene);
+    progress.start(scene);
 
-    std::cerr << "ns = " << info.scene->sampleCount() << '\n';
+    std::cerr << "ns = " << scene->sampleCount() << '\n';
 
     Renderer renderer;
-    Image image(renderer.render(info.scene, progress));
+    Image image(renderer.render(scene, progress));
 
     progress.finish();
 
-    auto& config = info.scene->outputConfig();
+    auto& config = scene->outputConfig();
 
     if (config->codification == ImageCodification::BINARY) {
         std::ofstream out(config->filename, std::ofstream::out | std::ofstream::binary);

@@ -5,20 +5,15 @@
 #include "surface/sphere.h"
 #include "surface/spherevolume.h"
 #include "surface/triangle.h"
-#include "material/blinnphong.h"
+/*
 #include "light/pointlight.h"
 #include "light/spotlight.h"
-#include "light/sun.h"
+#include "light/sun.h"*/
 #include "lua/op.h"
-#include "material/lambertian.h"
-#include "material/metal.h"
-#include "material/dieletric.h"
-#include "material/toon.h"
-#include "shader/normalshader.h"
-#include "shader/depthshader.h"
-#include "shader/raytracer.h"
-#include "shader/blinnphongshader.h"
-#include "shader/toonshader.h"
+#include "lua/light.h"
+#include "lua/material.h"
+#include "lua/shader.h"
+#include "lua/surface.h"
 #include "util/objparser.h"
 using std::string;
 
@@ -47,90 +42,7 @@ int scene_mkviewport(lua_State* L)  // { width=, height= }
     return 1;
 }
 
-
-int scene_mklambert(lua_State* L)   // albedo
-{
-    if (LuaOp<Vec3>::is(L, 1)) {
-        Vec3 albedo = LuaOp<Vec3>::check(L, 1); // albedo
-        lua_pop(L, 1);                          //
-        LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo));
-    }
-    else {
-        Vec3 albedo, emission;
-        getintable(L, 1, "albedo", albedo);
-        getintable(L, 1, "emission", emission, Vec3(0,0,0));
-        lua_pop(L, 1);                          //
-        LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo, emission));
-    }
-
-    return 1;
-}
-
-
-int scene_mkmetal(lua_State* L)   // { albedo=, fuzz= }
-{
-    Vec3 albedo, emission;
-    float fuzz;
-    getintable(L, 1, "albedo", albedo);
-    getintable(L, 1, "fuzz", fuzz, 0.0f);
-    getintable(L, 1, "emission", emission, Vec3(0,0,0));
-
-    LuaOp<MaterialPtr>::newuserdata(L, new Metal(albedo, fuzz, emission));
-    return 1;
-}
-
-
-int scene_mkdieletric(lua_State* L)   // { albedo=, fuzz= }
-{
-    float ref_idx;
-    getintable(L, 1, "ref_idx", ref_idx);
-
-    LuaOp<MaterialPtr>::newuserdata(L, new Dieletric(ref_idx));
-    return 1;
-}
-
-
-int scene_mktoon(lua_State* L)
-{
-    std::vector<Color3f> colors;
-    std::vector<float> cuts;
-
-    lua_len(L, 1);                              // table len
-    int len = lua_tointeger(L, -1);              // table len
-    lua_pop(L, 1);                               // table
-
-    Color3f color;
-    float cut;
-
-    getintable(L, 1, 1, color);
-    colors.push_back(color);
-    for (int i = 2; i <= len; i += 2) {
-        getintable(L, 1, i, cut);
-        cuts.push_back(cut);
-        getintable(L, 1, i+1, color);
-        colors.push_back(color);
-    }
-
-    LuaOp<MaterialPtr>::newuserdata(L, new ToonMaterial(colors, cuts));
-    return 1;
-}
-
-
-int scene_mkblinnphong(lua_State* L)   // { albedo=, fuzz= }
-{
-    Vec3 specular, diffuse, ambient;
-    float shininess;
-    getintable(L, 1, "specular", specular, Vec3(0,0,0));
-    getintable(L, 1, "diffuse", diffuse, Vec3(0,0,0));
-    getintable(L, 1, "ambient", ambient, Vec3(0,0,0));
-    getintable(L, 1, "shininess", shininess, 0.0f);
-
-    LuaOp<MaterialPtr>::newuserdata(L,
-        new BlinnPhongMaterial(diffuse, specular, ambient, shininess));
-    return 1;
-}
-
-
+/*
 int scene_mksphere(lua_State* L)   // { center, radius }
 {
     Vec3 center;
@@ -192,45 +104,7 @@ int scene_loadobj(lua_State* L)   // filename
     return 1;
 }
 
-
-int scene_mkpointlight(lua_State* L)
-{
-    Vec3 position, intensity;
-    getintable(L, 1, "position", position);
-    getintable(L, 1, "intensity", intensity);
-
-    LuaOp<LightPtr>::newuserdata(L, new PointLight(position, intensity));
-    return 1;
-}
-
-
-int scene_mkspotlight(lua_State* L)
-{
-    Vec3 position, direction, intensity;
-    float angle, decay;
-
-    getintable(L, 1, "position", position);
-    getintable(L, 1, "direction", direction);
-    getintable(L, 1, "intensity", intensity);
-    getintable(L, 1, "angle", angle);
-    getintable(L, 1, "decay", decay, 1.0f);
-
-    LuaOp<LightPtr>::newuserdata(L, new SpotLight(position, direction,
-        intensity, angle, decay));
-    return 1;
-}
-
-
-int scene_mksun(lua_State* L)
-{
-    Vec3 direction, intensity;
-    getintable(L, 1, "direction", direction);
-    getintable(L, 1, "intensity", intensity);
-
-    LuaOp<LightPtr>::newuserdata(L, new Sun(direction, intensity));
-    return 1;
-}
-
+*/
 
 int scene_mksky(lua_State* L)   // { zenith, nadir }
 {
@@ -239,40 +113,6 @@ int scene_mksky(lua_State* L)   // { zenith, nadir }
     getintable(L, 1, "nadir", nadir);
 
     LuaOp<BackgroundPtr>::newuserdata(L, new Sky(zenith, nadir));
-    return 1;
-}
-
-
-int scene_mkdepthrender(lua_State* L)   // { foreground=, background=, maxdepth= }
-{
-    Vec3 fg, bg;
-    float maxdepth;
-    getintable(L, 1, "foreground", fg, Vec3(1,1,1));
-    getintable(L, 1, "background", bg, Vec3(0,0,0));
-    getintable(L, 1, "maxdepth", maxdepth, 1.0f);
-
-    LuaOp<ShaderPtr>::newuserdata(L, new DepthShader(maxdepth, fg, bg));
-    return 1;
-}
-
-
-int scene_mknormalrender(lua_State* L)
-{
-    LuaOp<ShaderPtr>::newuserdata(L, new NormalShader());
-    return 1;
-}
-
-
-int scene_mkblinnphongshader(lua_State* L)
-{
-    LuaOp<ShaderPtr>::newuserdata(L, new BlinnPhongShader());
-    return 1;
-}
-
-
-int scene_mktoonshader(lua_State* L)
-{
-    LuaOp<ShaderPtr>::newuserdata(L, new ToonShader());
     return 1;
 }
 
@@ -343,7 +183,10 @@ int scene_mkscene(lua_State* L) // { obj1, obj2, {objs}, ..., bg = }
     ShaderPtr shader;
     getintable(L, 1, "shader", shader);
     if (!shader) {
-        shader = ShaderPtr(new RayTracer);
+        lua_pushcfunction(L, shader_raytracer);
+        lua_call(L, 0, 1);
+        shader = LuaOp<ShaderPtr>::check(L, -1);
+        lua_pop(L, 1);
     }
 
     Scene *newscene = new Scene();
@@ -362,30 +205,26 @@ int scene_mkscene(lua_State* L) // { obj1, obj2, {objs}, ..., bg = }
 }
 
 
-luaL_Reg scene_lib[] = {
+const luaL_Reg scene_lib[] = {
     { "lookat", scene_lookat },
     { "mkviewport", scene_mkviewport },
-    { "sphere", scene_mksphere },
-    { "sphere_volume", scene_mkspherevolume },
-    { "triangle", scene_mktriangle },
-    { "loadobj", scene_loadobj },
-    { "lambert", scene_mklambert },
-    { "dieletric", scene_mkdieletric },
-    { "metal", scene_mkmetal },
-    { "blinn_phong", scene_mkblinnphong },
-    { "toon", scene_mktoon },
     { "sky", scene_mksky },
-    { "spotlight", scene_mkspotlight },
-    { "pointlight", scene_mkpointlight },
-    { "sun", scene_mksun },
-    { "depthshader", scene_mkdepthrender },
-    { "normalshader", scene_mknormalrender },
-    { "toon_shader", scene_mktoonshader },
-    { "blinn_phong_shader", scene_mkblinnphongshader },
     { "mkscene", scene_mkscene },
     { "output_config", scene_mkoutputconfig },
     { nullptr, nullptr }
 };
+
+
+// Transfer value from table on position -1 to table on position -2,
+// with the same name
+static void transfer(lua_State *L, const char* name)
+{
+    // t1 t2
+    lua_pushstring(L, name); // t1 t2 name
+    lua_pushvalue(L, -1);    // t1 t2 name name
+    lua_gettable(L, -3);     // t1 t2 name obj
+    lua_settable(L, -4);     // t1 t2
+}
 
 
 int luaopen_scene(lua_State* L)
@@ -402,6 +241,33 @@ int luaopen_scene(lua_State* L)
 
     lua_getglobal(L, "_G");           // _G
     luaL_setfuncs(L, scene_lib, 0);   // _G
-    lua_pop(L, 1);                    //
+
+    luaopen_material(L);              // _G mat
+    lua_pushstring(L, "material");    // _G mat "mat"
+    lua_pushvalue(L, -2);             // _G mat "mat" mat
+    lua_settable(L, 1);               // _G mat
+    transfer(L, "metal");
+    transfer(L, "lambertian");
+    transfer(L, "dieletric");
+    transfer(L, "blinnphong");
+    transfer(L, "toon");
+    lua_pop(L, 1);                    // _G
+
+    luaopen_shader(L);                // _G shader
+    lua_setglobal(L, "shader");       // _G
+
+    luaopen_light(L);                 // _G light
+    lua_setglobal(L, "light");        // _G
+
+    luaopen_surface(L);              // _G mat
+    lua_pushstring(L, "surface");    // _G mat "mat"
+    lua_pushvalue(L, -2);             // _G mat "mat" mat
+    lua_settable(L, 1);               // _G mat
+    transfer(L, "triangle");
+    transfer(L, "sphere");
+    transfer(L, "spherevolume");
+    transfer(L, "loadobj");
+    lua_pop(L, 1);                    // _G
+
     return 0;
 }

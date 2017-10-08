@@ -29,6 +29,6 @@ scene = mkscene {
     sphere {
         center = { 0, 0, -1 },
         radius = 0.5,
-        material = lambert { 0.5, 0.5, 0.5 }
+        material = lambertian { 0.5, 0.5, 0.5 }
     },
 }

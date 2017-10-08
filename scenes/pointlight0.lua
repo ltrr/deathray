@@ -2,7 +2,7 @@ width = 1200
 height = 600
 
 scene = mkscene {
-    shader = blinn_phong_shader(),
+    shader = shader.blinnphong(),
     output_config = output_config {
         filename = "images/pointlight0.ppm",
     },
@@ -24,25 +24,25 @@ scene = mkscene {
     sphere {
         center = { 0, -100.5, -1 },
         radius = 100,
-        material = blinn_phong {
+        material = blinnphong {
             diffuse = {0.4, 0.4, 0.4},
         }
     },
     sphere {
         center = { -1, 0, -1 },
         radius = 0.4,
-        material = blinn_phong {
+        material = blinnphong {
             diffuse = {1, 0, 0},
         }
     },
     sphere {
         center = { 1, 0, -1 },
         radius = 0.4,
-        material = blinn_phong {
+        material = blinnphong {
             diffuse = {0.0, 0.0, 1},
         }
     },
-    pointlight {
+    light.point {
         position = { 0, 0, -1 },
         intensity = { 1, 1, 1 },
     }

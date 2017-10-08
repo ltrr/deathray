@@ -3,7 +3,7 @@ height = 600
 mat = toon { {1,.9,.9}, .95, {.8,0,.7}, .6, {.5,0,.2}, .5, {.1,0,0} }
 
 scene = mkscene {
-    shader = toon_shader(),
+    shader = shader.toon(),
     samples = 8,
     output_config = output_config {
         filename = "images/toon0.ppm",
@@ -34,12 +34,12 @@ scene = mkscene {
         material = mat
     },
     --[[
-    sun {
+    light.sun {
         direction = { 20, 10, 5 },
         intensity = { 1, 1, 1 }
     },
     --]]
-    pointlight {
+    light.point {
         position = { 2, 0, 0 },
         intensity = { 1, 1, 1 }
     },

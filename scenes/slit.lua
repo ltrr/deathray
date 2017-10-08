@@ -1,11 +1,11 @@
 width = 400
 height = 400
 
-floor_mat = lambert {
+floor_mat = lambertian {
     albedo = { 0.5, 0.5, 0.5 },
 }
 
-light_mat = lambert {
+light_mat = lambertian {
     emission = { 1, 1, 1 }
 }
 
@@ -13,7 +13,7 @@ scene = mkscene {
     output_config = output_config {
         filename = "images/slit.ppm",
     },
-    samples = 1000,
+    samples = 1,
     viewport = mkviewport {
         width = width,
         height = height
@@ -92,15 +92,12 @@ scene = mkscene {
         {0, 2, -1}, {0, 0, -1}, {0, 2, -0.1},
         material = floor_mat
     },
-
-    ---[[
-    sphere_volume {
+    spherevolume {
         center = {0,0,0},
         radius = 10,
         density = 10,
-        material = lambert { 1, 1, 1 }
+        material = lambertian { 1, 1, 1 }
     },
-    --]]
     bg = sky {
         zenith = { 0, 0, 0 },
         nadir = { 0, 0, 0 }

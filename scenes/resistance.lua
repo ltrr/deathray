@@ -96,7 +96,7 @@ for i = 1, layers do
             scene[#scene+1] = sphere {
                 center = { x, i * r, z },
                 radius = r,
-                material = lambert(hsv(h, s, v))
+                material = lambertian(hsv(h, s, v))
             }
         end
     end
@@ -114,14 +114,14 @@ scene[#scene+1] = sphere {
 scene[#scene+1] = sphere {
     center = { 0, -80, 0 },
     radius = 40,
-    material = lambert { 0.1, 0.1, 0.1 }
+    material = lambertian { 0.1, 0.1, 0.1 }
 }
 
 -- bg sphere
 scene[#scene+1] = sphere {
     center = { 0, R+300, 0 },
     radius = 280,
-    material = lambert { 0, 0, 54/255 }
+    material = lambertian { 0, 0, 54/255 }
 }
 
 
