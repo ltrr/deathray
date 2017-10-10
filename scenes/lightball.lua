@@ -5,7 +5,7 @@ scene = mkscene {
     output_config = output_config {
         filename = "images/lightball.ppm",
     },
-    samples = 200,
+    samples = 64,
     viewport = mkviewport {
         width = width,
         height = height
@@ -20,15 +20,13 @@ scene = mkscene {
     sphere {
         center = {0,0.5,0},
         radius = 0.1,
-        material = lambertian { emission = {10,10,10} }
+        material = lambertian { emission = color {10,10,10} }
     },
-    ---[[
     sphere {
         center = {0,0.5,0},
         radius = 0.5,
         material = dieletric { ref_idx = 1.3 }
     },
-    --]]
     sphere {
         center = {0,0.5,-1},
         radius = 0.4,
@@ -49,11 +47,10 @@ scene = mkscene {
         radius = 0.3,
         material = dieletric { ref_idx = 1.3 }
     },
-
     sphere {
         center = {0,-100,0},
         radius = 100,
-        material = metal { albedo = {.5, .5, .5}, fuzz = 0.1 }
+        material = metal { albedo = color {.5, .5, .5}, fuzz = 0.1 }
     },
     bg = sky {
         zenith = { 0.1, 0.1, 0.2 },

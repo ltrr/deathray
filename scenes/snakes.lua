@@ -46,17 +46,17 @@ for j=1,k do
         scene[#scene+1] = sphere {
             center = { j, y, z },
             radius = 0.5,
-            material = lambertian {
+            material = lambertian (color {
                 (j-1) / k, 0, 1 - ((j-1) / k)
-            }
+            })
         }
 
         scene[#scene+1] = sphere {
             center = { j, 4 - y, z },
             radius = 0.5,
-            material = lambertian {
+            material = lambertian (color {
                 0, 1 - ((j-1) / k), (j-1) / k
-            }
+            })
         }
     end
 end

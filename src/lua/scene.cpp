@@ -2,20 +2,15 @@
 
 #include <type_traits>
 #include "background/sky.h"
-#include "surface/sphere.h"
-#include "surface/spherevolume.h"
-#include "surface/triangle.h"
-/*
-#include "light/pointlight.h"
-#include "light/spotlight.h"
-#include "light/sun.h"*/
 #include "lua/op.h"
 #include "lua/light.h"
 #include "lua/material.h"
 #include "lua/shader.h"
 #include "lua/surface.h"
+#include "lua/texture.h"
 #include "util/objparser.h"
 using std::string;
+
 
 int scene_lookat(lua_State* L)
 {
@@ -42,69 +37,6 @@ int scene_mkviewport(lua_State* L)  // { width=, height= }
     return 1;
 }
 
-/*
-int scene_mksphere(lua_State* L)   // { center, radius }
-{
-    Vec3 center;
-    float radius;
-    MaterialPtr mat;
-    getintable(L, 1, "center", center);
-    getintable(L, 1, "radius", radius);
-    getintable(L, 1, "material", mat);
-
-    LuaOp<SurfacePtr>::newuserdata(L, new Sphere(center, radius, mat));
-    return 1;
-}
-
-
-int scene_mkspherevolume(lua_State* L)   // { center, radius }
-{
-    Vec3 center;
-    float radius, d;
-    MaterialPtr mat;
-    getintable(L, 1, "center", center);
-    getintable(L, 1, "radius", radius);
-    getintable(L, 1, "density", d);
-    getintable(L, 1, "material", mat);
-
-    LuaOp<SurfacePtr>::newuserdata(L, new SphereVolume(center, radius, d, mat));
-    return 1;
-}
-
-
-int scene_mktriangle(lua_State* L)   // { p1, p2, p3, material= }
-{
-    Vec3 p1, p2, p3;
-    MaterialPtr mat;
-    getintable(L, 1, 1, p1);
-    getintable(L, 1, 2, p2);
-    getintable(L, 1, 3, p3);
-    getintable(L, 1, "material", mat);
-
-    LuaOp<SurfacePtr>::newuserdata(L, new Triangle(p1, p2, p3, mat));
-    return 1;
-}
-
-
-int scene_loadobj(lua_State* L)   // filename
-{
-    string filename(LuaOp<string>::check(L, 1));
-    auto result = parseObj(filename);
-    lua_settop(L, 0);                   //
-
-    if (!result.ok) {
-        luaL_error(L, "error reading mesh from file %s", filename.c_str());
-    }
-
-    lua_createtable(L, result.surfaces.size(), 0);               // table
-    for (int i = 0; i < result.surfaces.size(); i++) {
-        LuaOp<SurfacePtr>::pushuserdata(L, result.surfaces[i]);  // table surf
-        lua_seti(L, 1, i+1);                                     // table
-    }
-    return 1;
-}
-
-*/
 
 int scene_mksky(lua_State* L)   // { zenith, nadir }
 {
@@ -234,6 +166,7 @@ int luaopen_scene(lua_State* L)
     LuaOp<ViewportPtr>::registerudata(L);
     LuaOp<SurfacePtr>::registerudata(L);
     LuaOp<MaterialPtr>::registerudata(L);
+    LuaOp<TexturePtr>::registerudata(L);
     LuaOp<BackgroundPtr>::registerudata(L);
     LuaOp<ShaderPtr>::registerudata(L);
     LuaOp<LightPtr>::registerudata(L);
@@ -267,6 +200,13 @@ int luaopen_scene(lua_State* L)
     transfer(L, "sphere");
     transfer(L, "spherevolume");
     transfer(L, "loadobj");
+    lua_pop(L, 1);                    // _G
+
+    luaopen_texture(L);               // _G tex
+    lua_pushstring(L, "texture");     // _G tex "tex"
+    lua_pushvalue(L, -2);             // _G tex "tex" tex
+    lua_settable(L, 1);               // _G tex
+    transfer(L, "color");
     lua_pop(L, 1);                    // _G
 
     return 0;

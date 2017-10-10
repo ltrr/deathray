@@ -11,6 +11,7 @@ struct Hit
     Point3 point;
     Vec3 normal;
     MaterialPtr material;
+    float u, v;
 };
 
 

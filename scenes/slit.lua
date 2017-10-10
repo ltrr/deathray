@@ -2,11 +2,11 @@ width = 400
 height = 400
 
 floor_mat = lambertian {
-    albedo = { 0.5, 0.5, 0.5 },
+    albedo = color { 0.5, 0.5, 0.5 },
 }
 
 light_mat = lambertian {
-    emission = { 1, 1, 1 }
+    emission = color { 1, 1, 1 }
 }
 
 scene = mkscene {

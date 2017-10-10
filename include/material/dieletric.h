@@ -11,10 +11,10 @@ private:
 
 public:
     Dieletric()
-        : refract_index_(1) {}
+        : RaytraceMaterial(), refract_index_(1) { }
 
     Dieletric(float ref_ind)
-        : refract_index_(ref_ind) {}
+        : RaytraceMaterial(), refract_index_(ref_ind) { }
 
     bool scatter(const Vec3& in, const Hit& hit, Vec3& scattered) const;
 };

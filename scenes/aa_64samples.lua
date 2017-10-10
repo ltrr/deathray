@@ -1,6 +1,6 @@
 width = 1200
 height = 600
-mat = lambertian { 0.5, 0.5, 0.5 }
+mat = lambertian(color { 0.5, 0.5, 0.5 })
 
 scene = mkscene {
     samples = 64,

@@ -2,12 +2,12 @@ width = 400
 height = 400
 
 mat = {}
-mat[1] = lambertian { 0.8, 0.5, 0.5 }
-mat[2] = lambertian { 0.8, 0.8, 0.5 }
-mat[3] = lambertian { 0.5, 0.8, 0.5 }
-mat[4] = lambertian { 0.5, 0.8, 0.8 }
-mat[5] = lambertian { 0.5, 0.5, 0.8 }
-mat[6] = lambertian { 0.8, 0.5, 0.8 }
+mat[1] = lambertian(color { 0.8, 0.5, 0.5 })
+mat[2] = lambertian(color { 0.8, 0.8, 0.5 })
+mat[3] = lambertian(color { 0.5, 0.8, 0.5 })
+mat[4] = lambertian(color { 0.5, 0.8, 0.8 })
+mat[5] = lambertian(color { 0.5, 0.5, 0.8 })
+mat[6] = lambertian(color { 0.8, 0.5, 0.8 })
 
 
 scene = {

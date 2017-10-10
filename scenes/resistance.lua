@@ -96,7 +96,7 @@ for i = 1, layers do
             scene[#scene+1] = sphere {
                 center = { x, i * r, z },
                 radius = r,
-                material = lambertian(hsv(h, s, v))
+                material = lambertian(color(hsv(h, s, v)))
             }
         end
     end
@@ -107,21 +107,21 @@ end
 scene[#scene+1] = sphere {
     center = { 0, r * layers, 0 },
     radius = 0.9 * R,
-    material = metal { albedo = { 1, 1, 1 }, fuzz = 0 }
+    material = metal { albedo = color { 1, 1, 1 }, fuzz = 0 }
 }
 
 -- black sphere behind the camera (pupil)
 scene[#scene+1] = sphere {
     center = { 0, -80, 0 },
     radius = 40,
-    material = lambertian { 0.1, 0.1, 0.1 }
+    material = lambertian(color { 0.1, 0.1, 0.1 })
 }
 
 -- bg sphere
 scene[#scene+1] = sphere {
     center = { 0, R+300, 0 },
     radius = 280,
-    material = lambertian { 0, 0, 54/255 }
+    material = lambertian(color { 0, 0, 54/255 })
 }
 
 

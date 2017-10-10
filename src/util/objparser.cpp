@@ -63,7 +63,7 @@ ObjParserResult parseObj(std::string filename)
     vector<Vec3> vns;
     bool smooth = false;
 
-    MaterialPtr mat(new Lambertian { Vec3(0.5, 0.5, 0.5) });
+    MaterialPtr mat(new Lambertian { GRAY_TEXTURE });
 
     string line, token;
     while (std::getline(in, line)) {

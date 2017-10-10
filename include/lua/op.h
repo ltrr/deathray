@@ -13,6 +13,7 @@
 #include "scene/scene.h"
 #include "scene/viewport.h"
 #include "shader/shader.h"
+#include "texture/texture.h"
 #include "util/outputconfig.h"
 #include "util/vector.h"
 
@@ -57,6 +58,13 @@ template<>
 struct UserType<Material>
 {
     static constexpr const char* name = "material";
+};
+
+
+template<>
+struct UserType<Texture>
+{
+    static constexpr const char* name = "texture";
 };
 
 

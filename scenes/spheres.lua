@@ -20,22 +20,22 @@ scene = mkscene {
     sphere {
         center = {0,0,0},
         radius = 0.5,
-        material = lambertian { 0.8, 0.5, 0.5 }
+        material = lambertian(color { 0.8, 0.5, 0.5 })
     },
     sphere {
         center = {0,0,1},
         radius = 0.5,
-        material = lambertian { 0.3, 0.8, 0.3 }
+        material = lambertian(color { 0.3, 0.8, 0.3 })
     },
     sphere {
         center = {0,0,-1},
         radius = 0.5,
-        material = lambertian { 0.3, 0.3, 0.8 }
+        material = lambertian(color { 0.3, 0.3, 0.8 })
     },
     sphere {
         center = {0,-100.5,0},
         radius = 100,
-        material = metal { albedo = { 0.5, 0.5, 0.5 }, fuzz = 0.5 }
+        material = metal { albedo = color { 0.5, 0.5, 0.5 }, fuzz = 0.5 }
     },
     bg = sky {
         zenith = { 0.8, 0.8, 0.9 },

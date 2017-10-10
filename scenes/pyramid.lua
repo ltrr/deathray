@@ -30,28 +30,28 @@ scene = mkscene {
     },
     triangle {
         ptop, pfl, pfr,
-        material = lambertian { 0.8, 0.8, 0.8 }
+        material = lambertian(color { 0.8, 0.8, 0.8 })
     },
     triangle {
         ptop, pfr, pbr,
-        material = lambertian { 0.5, 0.8, 0.8 }
+        material = lambertian(color { 0.5, 0.8, 0.8 })
     },
     triangle {
         ptop, pbr, pbl,
-        material = lambertian { 0.8, 0.8, 0.5 }
+        material = lambertian(color { 0.8, 0.8, 0.5 })
     },
     triangle {
         ptop, pbl, pfl,
-        material = lambertian { 0.8, 0.5, 0.8 }
+        material = lambertian(color { 0.8, 0.5, 0.8 })
     },
 
     triangle {
         gfl, gfr, gbr,
-        material = metal { albedo = { 0.5, 0.5, 0.5 }, fuzz = 0.1 }
+        material = metal { albedo = color { 0.5, 0.5, 0.5 }, fuzz = 0.1 }
     },
     triangle {
         gfl, gbl, gbr,
-        material = metal { albedo = { 0.5, 0.5, 0.5 }, fuzz = 0.1 }
+        material = metal { albedo = color { 0.5, 0.5, 0.5 }, fuzz = 0.1 }
     },
     bg = sky {
         zenith = { 1, 1, 1 },

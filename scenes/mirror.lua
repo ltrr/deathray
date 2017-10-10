@@ -24,11 +24,11 @@ scene = mkscene {
     sphere {
         center = { 0, -100.5, -3 },
         radius = 100,
-        material = metal { albedo = { 0.5, 0.5, 0.5 } }
+        material = metal { albedo = color { 0.5, 0.5, 0.5 } }
     },
     sphere {
         center = { 0, 0, -1 },
         radius = 0.5,
-        material = lambertian { 0.5, 0.5, 0.5 }
+        material = lambertian (color { 0.5, 0.5, 0.5 })
     },
 }

@@ -19,7 +19,7 @@ scene = mkscene {
     sphere {
         center = {0,0,0},
         radius = 1,
-        material = lambertian { 0.5, 0.5, 0.5 }
+        material = lambertian(color { 0.5, 0.5, 0.5 })
     },
     bg = sky {
         zenith = { 1, 1, 1 },

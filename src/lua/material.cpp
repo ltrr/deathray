@@ -10,15 +10,15 @@
 
 int material_lambertian(lua_State* L)   // albedo
 {
-    if (LuaOp<Vec3>::is(L, 1)) {
-        Vec3 albedo = LuaOp<Vec3>::check(L, 1); // albedo
+    if (LuaOp<TexturePtr>::is(L, 1)) {
+        TexturePtr albedo = LuaOp<TexturePtr>::check(L, 1); // albedo
         lua_pop(L, 1);                          //
         LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo));
     }
     else {
-        Vec3 albedo, emission;
-        getintable(L, 1, "albedo", albedo);
-        getintable(L, 1, "emission", emission, Vec3(0,0,0));
+        TexturePtr albedo, emission;
+        getintable(L, 1, "albedo", albedo, WHITE_TEXTURE);
+        getintable(L, 1, "emission", emission, BLACK_TEXTURE);
         lua_pop(L, 1);                          //
         LuaOp<MaterialPtr>::newuserdata(L, new Lambertian(albedo, emission));
     }
@@ -29,11 +29,11 @@ int material_lambertian(lua_State* L)   // albedo
 
 int material_metal(lua_State* L)   // { albedo=, fuzz= }
 {
-    Vec3 albedo, emission;
+    TexturePtr albedo, emission;
     float fuzz;
     getintable(L, 1, "albedo", albedo);
     getintable(L, 1, "fuzz", fuzz, 0.0f);
-    getintable(L, 1, "emission", emission, Vec3(0,0,0));
+    getintable(L, 1, "emission", emission, BLACK_TEXTURE);
 
     LuaOp<MaterialPtr>::newuserdata(L, new Metal(albedo, fuzz, emission));
     return 1;
