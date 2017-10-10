@@ -8,6 +8,8 @@
 
 int texture_color(lua_State *);
 
+int texture_checkers(lua_State *);
+
 int luaopen_texture(lua_State *);
 
 extern const luaL_Reg texture_lib[];

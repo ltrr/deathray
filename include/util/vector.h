@@ -1,13 +1,8 @@
 #ifndef DEATHRAY_VECTOR_H_
 #define DEATHRAY_VECTOR_H_
 
-#include <cmath>
-#include <limits>
 #include <iostream>
-
-
-const float PI = acos(-1);
-const float EPS = std::numeric_limits<float>::epsilon();
+#include "util/math.h"
 
 
 class Vec3

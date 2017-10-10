@@ -47,7 +47,7 @@ bool Triangle::hit(const Ray &ray, Hit& hit, float& error) const
     float su = (ru*vv - rv*uv) / d;
     float sv = (rv*uu - ru*uv) / d;
 
-    if (su >= -EPS && sv >= -10*FLOAT_EPS && su + sv <= 1+FLOAT_EPS) {
+    if (su >= -FLOAT_EPS && sv >= -10*FLOAT_EPS && su + sv <= 1+FLOAT_EPS) {
         hit.t = t;
         hit.point = ray.at(t);
         hit.normal = unit(dn > 0 ? -n_ : n_);

@@ -2,6 +2,7 @@
 
 #include "lua/op.h"
 #include "texture/texture.h"
+#include "texture/checkers.h"
 #include "util/color.h"
 
 
@@ -13,8 +14,16 @@ int texture_color(lua_State *L)   // rgb
 }
 
 
+int texture_checkers(lua_State *L)
+{
+    LuaOp<TexturePtr>::newuserdata(L, new CheckersTexture);
+    return 1;
+}
+
+
 const luaL_Reg texture_lib[] = {
     { "color", texture_color },
+    { "checkers", texture_checkers },
     { nullptr, nullptr }
 };
 

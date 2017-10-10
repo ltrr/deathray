@@ -15,19 +15,29 @@ bool Sphere::hit(const Ray &ray, Hit& hit, float& error) const
         float root1 = -(d + b);
         if (ray.over(root1)) {
             hit.t = root1;
-            error = root1 * 1e-4f;
             hit.point = ray.at(root1);
             hit.normal = unit(hit.point - center_);
             hit.material = this->material_;
+
+            Vec3 diff = hit.point - center_;
+            hit.u = 10 * atan2(diff.y(), diff.x()) / TWO_PI;
+            hit.v = 10 * acos(diff.z()) / PI;
+
+            error = root1 * 1e-4f;
             return true;
         }
         float root2 = (d - b);
         if (ray.over(root2)) {
             hit.t = root2;
-            error = root2 * 1e-4f;
             hit.point = ray.at(root2);
             hit.normal = unit(hit.point - center_);
             hit.material = this->material_;
+
+            Vec3 diff = hit.point - center_;
+            hit.u = 10 * atan2(diff.y(), diff.x()) / TWO_PI;
+            hit.v = 10 * acos(diff.z()) / PI;
+
+            error = root2 * 1e-4f;
             return true;
         }
     }
