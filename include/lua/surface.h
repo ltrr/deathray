@@ -10,7 +10,7 @@ int surface_sphere(lua_State *);
 
 int surface_triangle(lua_State *);
 
-int surface_spherevolume(lua_State *);
+//int surface_spherevolume(lua_State *);
 
 int surface_loadobj(lua_State *);
 

@@ -30,3 +30,16 @@ Ray PerspectiveCamera::windowToRay(const Vec3& uv) const
     Vec3 target = bottomleft_ + uv.x() * horizontal_ + uv.y() * vertical_;
     return Ray(origin_, target);
 }
+
+
+CameraPtr PerspectiveCamera::fromDescription(const CameraDescription *desc)
+{
+    const PerspectiveCameraDescription *cam =
+        dynamic_cast<const PerspectiveCameraDescription *>(desc);
+
+    return CameraPtr(new PerspectiveCamera(cam->position,
+                                           cam->target,
+                                           cam->up,
+                                           cam->field_of_view,
+                                           cam->aspect_ratio));
+}

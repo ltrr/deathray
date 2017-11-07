@@ -2,9 +2,9 @@
 #define DEATHRAY_CAMERA_H
 
 #include <memory>
+#include "description/camera.h"
 #include "util/ray.h"
 #include "util/vector.h"
-
 
 class Camera
 {
@@ -13,6 +13,9 @@ public:
 
     virtual Ray windowToRay(const Vec3& v) const = 0;
 };
+
+
+typedef std::shared_ptr<Camera> CameraPtr;
 
 
 class PerspectiveCamera : public Camera
@@ -27,9 +30,9 @@ public:
         const Vec3& up, float fov, float aspect);
 
     Ray windowToRay(const Vec3& v) const;
+
+    static CameraPtr fromDescription(const CameraDescription *cam);
 };
 
-
-typedef std::shared_ptr<Camera> CameraPtr;
 
 #endif // DEATHRAY_CAMERA_H

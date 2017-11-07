@@ -1,5 +1,6 @@
 #include "surface/sphere.h"
 #include "util/math.h"
+#include "util/transform.h"
 
 
 bool Sphere::hit(const Ray &ray, Hit& hit, float& error) const
@@ -42,4 +43,12 @@ bool Sphere::hit(const Ray &ray, Hit& hit, float& error) const
         }
     }
     return false;
+}
+
+
+SurfacePtr Sphere::fromDescription(const SurfaceDescription *surf,
+    const Transform&)
+{
+    const SphereDescription *sp = dynamic_cast<const SphereDescription *>(surf);
+    return SurfacePtr(new Sphere(sp->center, sp->radius, sp->material));
 }

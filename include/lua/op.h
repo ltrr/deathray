@@ -10,7 +10,9 @@
 #include "light/light.h"
 #include "material/material.h"
 #include "scene/camera.h"
-#include "scene/scene.h"
+//#include "scene/scene.h"
+#include "description/scene.h"
+#include "description/surface.h"
 #include "scene/viewport.h"
 #include "shader/shader.h"
 #include "texture/texture.h"
@@ -39,16 +41,14 @@ struct UserType<Viewport>
     static constexpr const char* name = "viewport";
 };
 
-
 template<>
-struct UserType<Surface>
+struct UserType<TransformableDescription>
 {
-    static constexpr const char* name = "surface";
+    static constexpr const char* name = "transformable";
 };
 
-
 template<>
-struct UserType<Scene>
+struct UserType<SceneDescription>
 {
     static constexpr const char* name = "scene";
 };
@@ -79,13 +79,6 @@ template<>
 struct UserType<Shader>
 {
     static constexpr const char* name = "shader";
-};
-
-
-template<>
-struct UserType<Light>
-{
-    static constexpr const char* name = "light";
 };
 
 

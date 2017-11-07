@@ -2,11 +2,13 @@
 #define DEATHRAY_SHADER_H_
 
 #include <memory>
-#include "scene/scene.h"
 #include "util/ray.h"
+
+//#include "scene/scene.h"
 
 class Scene;
 typedef std::shared_ptr<Scene> ScenePtr;
+
 
 class Shader
 {

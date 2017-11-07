@@ -1,5 +1,6 @@
 #include "shader/toonshader.h"
 #include "material/toon.h"
+#include "scene/scene.h"
 
 
 Vec3 ToonShader::colorAt(const ScenePtr& scene, const Ray& ray)

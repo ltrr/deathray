@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "material/material.h"
-
+#include "util/color.h"
 
 class ToonMaterial : public Material
 {

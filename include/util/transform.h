@@ -1,3 +1,7 @@
+#ifndef DEATHRAY_UTIL_TRANSFORM_H_
+#define DEATHRAY_UTIL_TRANSFORM_H_
+
+#include "util/vector.h"
 
 struct Mat44
 {
@@ -135,3 +139,6 @@ public:
         );
     }
 };
+
+
+#endif // DEATHRAY_UTIL_TRANSFORM_H_

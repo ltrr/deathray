@@ -7,7 +7,7 @@ scene = mkscene {
         filename = "images/mesh.ppm",
     },
     loadobj("assets/mesh/suzane.obj"),
-    camera = lookat {
+    lookat {
         origin = { -1.5, 0.5, 1.5 },
         target = { 0, 0, 0 },
         up = { 0, 1, 0 },

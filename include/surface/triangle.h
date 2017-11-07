@@ -3,7 +3,7 @@
 
 #include "material/material.h"
 #include "surface/surface.h"
-
+#include "description/surface.h"
 
 class Triangle : public Surface
 {
@@ -23,6 +23,12 @@ public:
         MaterialPtr mat);
 
     bool hit(const Ray &ray, Hit& hit, float& error) const;
+
+    static SurfacePtr fromDescription(const SurfaceDescription *,
+        const Transform&);
+
+    static std::vector<SurfacePtr> fromMeshDescription(const SurfaceDescription *,
+        const Transform&);
 };
 
 #endif // DEATHRAY_TRIANGE_H_

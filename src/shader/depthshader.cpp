@@ -1,4 +1,5 @@
 #include "shader/depthshader.h"
+#include "scene/scene.h"
 
 
 Vec3 DepthShader::colorAt(const ScenePtr& scene, const Ray& ray)

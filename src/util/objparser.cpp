@@ -46,24 +46,19 @@ bool parseVertexInfo(std::istream& is, VertexInfo& info)
 }
 
 
-ObjParserResult parseObj(std::string filename)
+bool parseObj(std::string filename, MeshDescription *desc)
 {
-    ObjParserResult result;
     std::ifstream in(filename);
 
     if (!in) {
         std::cerr << "file reading error" << '\n';
         std::cerr << "filename <" << filename << ">\n";
 
-        result.ok = false;
-        return result;
+        return false;
     }
 
-    vector<Point3> vs;
-    vector<Vec3> vns;
     bool smooth = false;
-
-    MaterialPtr mat(new Lambertian { GRAY_TEXTURE });
+    desc->material = MaterialPtr(new Lambertian { GRAY_TEXTURE });
 
     string line, token;
     while (std::getline(in, line)) {
@@ -72,32 +67,27 @@ ObjParserResult parseObj(std::string filename)
         if (token == "v") {
             Point3 v;
             iss >> v;
-            vs.push_back(v);
+            desc->vertices.push_back(v);
         }
         else if (token == "vn") {
             Vec3 vn;
             iss >> vn;
-            vns.push_back(vn);
+            //vns.push_back(vn);
         }
         else if (token == "f") {
             VertexInfo info;
             parseVertexInfo(iss, info);
-            Vec3 vertex1 = vs.at(info.vertex_idx - 1);
-            Vec3 normal1 = vns.at(info.normal_idx - 1);
+            int index1 = info.vertex_idx - 1;
             parseVertexInfo(iss, info);
-            Vec3 vertex2 = vs.at(info.vertex_idx - 1);
+            int index2 = info.vertex_idx - 1;
 
             while (parseVertexInfo(iss, info)) {
-                Vec3 vertex3 = vs.at(info.vertex_idx - 1);
-                result.surfaces.push_back(
-                    SurfacePtr(new Triangle(vertex1, vertex2, vertex3, normal1, mat))
-                );
-
-                vertex2 = vertex3;
+                int index3 = info.vertex_idx - 1;
+                desc->faces.push_back({ index1, index2, index3 });
+                index2 = index3;
             }
         }
     }
 
-    result.ok = true;
-    return result;
+    return true;
 }

@@ -3,16 +3,18 @@
 
 #include <vector>
 #include "material/material.h"
-#include "surface/surface.h"
+#include "description/surface.h"
 
+/*
 struct ObjParserResult
 {
     bool ok;
     std::vector<SurfacePtr> surfaces;
 };
+*/
 
 
-ObjParserResult parseObj(std::string filename);
+bool parseObj(std::string filename, MeshDescription *);
 
 
 #endif // DEATHRAY_OBJPARSER_H_

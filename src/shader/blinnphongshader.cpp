@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <typeinfo>
+#include "scene/scene.h"
 #include "material/blinnphong.h"
 
 Vec3 BlinnPhongShader::colorAt(const ScenePtr& scene, const Ray& ray)

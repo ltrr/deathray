@@ -1,46 +1,46 @@
 #include "lua/shader.h"
 
 #include "lua/op.h"
-#include "light/pointlight.h"
-#include "light/spotlight.h"
-#include "light/sun.h"
+#include "description/light.h"
+//#include "light/pointlight.h"
+//#include "light/spotlight.h"
+//#include "light/sun.h"
 
 
 int light_point(lua_State* L)
 {
-    Vec3 position, intensity;
-    getintable(L, 1, "position", position);
-    getintable(L, 1, "intensity", intensity);
+    PointLightDescription *light = new PointLightDescription();
+    getintable(L, 1, "position", light->position);
+    getintable(L, 1, "intensity", light->intensity);
 
-    LuaOp<LightPtr>::newuserdata(L, new PointLight(position, intensity));
+    LuaOp<TransformableDescriptionPtr>::newuserdata(L, light);
     return 1;
 }
 
 
 int light_spot(lua_State* L)
 {
-    Vec3 position, direction, intensity;
-    float angle, decay;
+    SpotLightDescription *light = new SpotLightDescription();
 
-    getintable(L, 1, "position", position);
-    getintable(L, 1, "direction", direction);
-    getintable(L, 1, "intensity", intensity);
-    getintable(L, 1, "angle", angle);
-    getintable(L, 1, "decay", decay, 1.0f);
+    getintable(L, 1, "position", light->position);
+    getintable(L, 1, "direction", light->direction);
+    getintable(L, 1, "intensity", light->intensity);
+    getintable(L, 1, "angle", light->angle);
+    getintable(L, 1, "decay", light->decay, 1.0f);
 
-    LuaOp<LightPtr>::newuserdata(L, new SpotLight(position, direction,
-        intensity, angle, decay));
+    LuaOp<TransformableDescriptionPtr>::newuserdata(L, light);
     return 1;
 }
 
 
 int light_sun(lua_State* L)
 {
-    Vec3 direction, intensity;
-    getintable(L, 1, "direction", direction);
-    getintable(L, 1, "intensity", intensity);
+    DirectionalLightDescription *light = new DirectionalLightDescription();
 
-    LuaOp<LightPtr>::newuserdata(L, new Sun(direction, intensity));
+    getintable(L, 1, "direction", light->direction);
+    getintable(L, 1, "intensity", light->intensity);
+
+    LuaOp<TransformableDescriptionPtr>::newuserdata(L, light);
     return 1;
 }
 

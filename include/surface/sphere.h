@@ -3,6 +3,7 @@
 
 #include "material/material.h"
 #include "surface/surface.h"
+#include "description/surface.h"
 #include "util/ray.h"
 #include "util/vector.h"
 
@@ -26,6 +27,9 @@ public:
     inline float radius() const { return radius_; }
 
     bool hit(const Ray &ray, Hit& hit, float& error) const;
+
+    static SurfacePtr fromDescription(const SurfaceDescription *,
+        const Transform&);
 };
 
 #endif // DEATHRAY_SPHERE_H_

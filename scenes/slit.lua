@@ -18,7 +18,7 @@ scene = mkscene {
         width = width,
         height = height
     },
-    camera = lookat {
+    lookat {
         origin = { -2, 1, 0 },
         target = { 0, 1, 0 },
         up = { 0, 1, 0 },

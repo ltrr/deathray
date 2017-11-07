@@ -1,3 +1,4 @@
+/*
 #include "scene/scenedescription.h"
 
 
@@ -9,6 +10,7 @@
 
 using std::string;
 using std::shared_ptr;
+
 
 
 template <typename T>
@@ -161,3 +163,4 @@ ShaderPtr SceneDescription::getSetting(const string& name) const;
 
 template
 ShaderPtr SceneDescription::getSetting(const string& name, const ShaderPtr& default_) const;
+*/

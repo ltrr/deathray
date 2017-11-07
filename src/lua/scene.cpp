@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include "background/sky.h"
+#include "description/camera.h"
 #include "lua/op.h"
 #include "lua/light.h"
 #include "lua/material.h"
@@ -14,15 +15,15 @@ using std::string;
 
 int scene_lookat(lua_State* L)
 {
-    Vec3 origin, target, up;
-    float aspect, fov;
-    getintable(L, 1, "origin", origin);
-    getintable(L, 1, "target", target);
-    getintable(L, 1, "up", up);
-    getintable(L, 1, "aspect", aspect);
-    getintable(L, 1, "fov", fov);
+    PerspectiveCameraDescription *cam = new PerspectiveCameraDescription;
 
-    LuaOp<CameraPtr>::newuserdata(L, new PerspectiveCamera(origin, target, up, fov, aspect));
+    getintable(L, 1, "origin", cam->position);
+    getintable(L, 1, "target", cam->target);
+    getintable(L, 1, "up", cam->up);
+    getintable(L, 1, "aspect", cam->aspect_ratio);
+    getintable(L, 1, "fov", cam->field_of_view);
+
+    LuaOp<TransformableDescriptionPtr>::newuserdata(L, cam);
     return 1;
 }
 
@@ -66,7 +67,8 @@ int scene_mkoutputconfig(lua_State* L)
 }
 
 
-void add_surfaces(lua_State* L, Scene* scene) // ... (table|obj)
+/*
+void add_surfaces(lua_State* L, SceneDescription* scene) // ... (table|obj)
 {
     if (lua_istable(L, -1)) {                        // ... table
         lua_len(L, -1);                               // ... table len
@@ -78,13 +80,33 @@ void add_surfaces(lua_State* L, Scene* scene) // ... (table|obj)
             lua_pop(L, 1);                           // ... table
         }
     }
-    else if (LuaOp<SurfacePtr>::is(L, -1)) {
-        SurfacePtr surface = LuaOp<SurfacePtr>::check(L, -1);  // table surf
-        scene->addSurface(surface);                            // table surf
+    else if (LuaOp<SurfaceDescriptionPtr>::is(L, -1)) {
+        SurfaceDescriptionPtr surface =
+            LuaOp<SurfaceDescriptionPtr>::check(L, -1);  // table surf
+        scene->addSurface(surface);                      // table surf
     }
+    /*
     else if(LuaOp<LightPtr>::is(L, -1)) {
         LightPtr light = LuaOp<LightPtr>::check(L, -1);        // table light
         scene->addLight(light);                                // table light
+    }
+}*/
+
+void add_transformables_to_scene(lua_State *L, SceneDescription *scene)
+{
+    lua_len(L, -1);                      // ... table len
+    int len = lua_tointeger(L, -1);      // ... table len
+    lua_pop(L, 1);                       // ... table
+
+    for (int i = 1; i <= len; i++) {
+        lua_geti(L, -1, i);              // ... table transf
+        if (LuaOp<TransformableDescriptionPtr>::is(L, -1))
+        {
+            TransformableDescriptionPtr transformable =
+                LuaOp<TransformableDescriptionPtr>::check(L, -1);
+            scene->addTransformable(transformable);
+        }
+        lua_pop(L, 1);                   // ... table
     }
 }
 
@@ -121,18 +143,19 @@ int scene_mkscene(lua_State* L) // { obj1, obj2, {objs}, ..., bg = }
         lua_pop(L, 1);
     }
 
-    Scene *newscene = new Scene();
-    newscene->ambient() = ambient;
-    newscene->background() = bg;
-    newscene->viewport() = viewport;
-    newscene->camera() = camera;
-    newscene->sampleCount() = sample_count;
-    newscene->outputConfig() = config;
-    newscene->shader() = shader;
+    SceneDescription *desc = new SceneDescription();
+    desc->outputConfig = config;
+    desc->ambientLight = ambient;
+    desc->background = bg;
+    desc->viewport = viewport;
+    desc->shader = shader;
+    desc->sample_count = sample_count;
+    add_transformables_to_scene(L, desc);
+    // add sample count
 
-    add_surfaces(L, newscene);                 // {objs}
+    // add_surfaces(L, newscene);                 // {objs}
     lua_settop(L, 0);                          //
-    LuaOp<ScenePtr>::newuserdata(L, newscene); // scene
+    LuaOp<SceneDescriptionPtr>::newuserdata(L, desc); // scene
     return 1;
 }
 
@@ -161,16 +184,14 @@ static void transfer(lua_State *L, const char* name)
 
 int luaopen_scene(lua_State* L)
 {
-    LuaOp<ScenePtr>::registerudata(L);
-    LuaOp<CameraPtr>::registerudata(L);
+    LuaOp<SceneDescriptionPtr>::registerudata(L);
     LuaOp<ViewportPtr>::registerudata(L);
-    LuaOp<SurfacePtr>::registerudata(L);
     LuaOp<MaterialPtr>::registerudata(L);
     LuaOp<TexturePtr>::registerudata(L);
     LuaOp<BackgroundPtr>::registerudata(L);
     LuaOp<ShaderPtr>::registerudata(L);
-    LuaOp<LightPtr>::registerudata(L);
     LuaOp<OutputConfigPtr>::registerudata(L);
+    LuaOp<TransformableDescriptionPtr>::registerudata(L);
 
     lua_getglobal(L, "_G");           // _G
     luaL_setfuncs(L, scene_lib, 0);   // _G
@@ -210,4 +231,22 @@ int luaopen_scene(lua_State* L)
     lua_pop(L, 1);                    // _G
 
     return 0;
+}
+
+
+SceneDescriptionPtr loadSceneDescription(const string& filename)
+{
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+    luaopen_scene(L);
+    bool error = luaL_dofile(L, filename.c_str());
+    if (error) {
+        const char* msg = lua_tostring(L, -1);
+        std::cerr << "error loading file " << filename << '\n'
+                  << msg << std::endl;
+        exit(1);
+    }
+    lua_getglobal(L, "scene");
+    auto desc = LuaOp<SceneDescriptionPtr>::check(L, -1);
+    return desc;
 }

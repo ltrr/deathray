@@ -101,4 +101,5 @@ public:
 
 typedef std::shared_ptr<Scene> ScenePtr;
 
+
 #endif // SCENE_DEATHRAY_H_

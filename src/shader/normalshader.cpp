@@ -1,4 +1,5 @@
 #include "shader/normalshader.h"
+#include "scene/scene.h"
 
 
 Vec3 NormalShader::colorAt(const ScenePtr& scene, const Ray& ray)

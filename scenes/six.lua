@@ -19,7 +19,7 @@ scene = {
         width = width,
         height = height
     },
-    camera = lookat {
+    lookat {
         origin = { 0, 4, 0 },
         target = { 0, 0, 0 },
         up = { 0, 0, 1 },
@@ -34,7 +34,7 @@ scene = {
 
 for i=1,6 do
     ang = i * math.pi / 3
-    scene[i] = sphere {
+    scene[#scene+1] = sphere {
         center = { 2 * math.cos(ang), 0, 2 * math.sin(ang) },
         radius = 1,
         material = mat[i]

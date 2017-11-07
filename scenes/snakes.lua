@@ -14,7 +14,7 @@ scene = {
         width = width,
         height = height
     },
-    camera = lookat {
+    lookat {
         origin = { n/2, 2, -3 },
         target = { n/2, 0, n/2 },
         up = { 0, 1, 0 },

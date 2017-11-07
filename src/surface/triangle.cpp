@@ -59,3 +59,33 @@ bool Triangle::hit(const Ray &ray, Hit& hit, float& error) const
         return false;
     }
 }
+
+
+SurfacePtr Triangle::fromDescription(const SurfaceDescription *surf,
+    const Transform&)
+{
+    const TriangleDescription *tri =
+        dynamic_cast<const TriangleDescription *>(surf);
+    return SurfacePtr(new Triangle(tri->p0, tri->p1, tri->p2, tri->material));
+}
+
+
+std::vector<SurfacePtr> Triangle::fromMeshDescription(
+    const SurfaceDescription *surf,
+    const Transform&)
+{
+    const MeshDescription *mesh = dynamic_cast<const MeshDescription *>(surf);
+
+    std::vector<SurfacePtr> faces;
+    for (auto face : mesh->faces)
+    {
+        faces.push_back(SurfacePtr(
+            new Triangle(
+                mesh->vertices[face[0]],
+                mesh->vertices[face[1]],
+                mesh->vertices[face[2]],
+                mesh->material)));
+    }
+
+    return faces;
+}
