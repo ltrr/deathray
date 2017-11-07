@@ -91,6 +91,10 @@ class Observer : public SceneDescriptionVisitor
             case SurfaceKind::TRIANGLE:
                 std::cout << "triangle" << '\n';
                 break;
+
+            case SurfaceKind::MESH:
+                std::cout << "mesh" << '\n';
+                break;
         }
     }
 

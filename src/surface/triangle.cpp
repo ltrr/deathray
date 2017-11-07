@@ -72,18 +72,19 @@ SurfacePtr Triangle::fromDescription(const SurfaceDescription *surf,
 
 std::vector<SurfacePtr> Triangle::fromMeshDescription(
     const SurfaceDescription *surf,
-    const Transform&)
+    const Transform& tr)
 {
     const MeshDescription *mesh = dynamic_cast<const MeshDescription *>(surf);
 
+    std::vector<Point3> vs(mesh->vertices.size());
+    for (int i = 0; i < vs.size(); i++) {
+        vs[i] = tr.applyP(mesh->vertices[i]);
+    }
+
     std::vector<SurfacePtr> faces;
-    for (auto face : mesh->faces)
-    {
+    for (auto face : mesh->faces) {
         faces.push_back(SurfacePtr(
-            new Triangle(
-                mesh->vertices[face[0]],
-                mesh->vertices[face[1]],
-                mesh->vertices[face[2]],
+            new Triangle(vs[face[0]], vs[face[1]], vs[face[2]],
                 mesh->material)));
     }
 

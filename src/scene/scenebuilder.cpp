@@ -63,14 +63,15 @@ void SceneBuilder::onCamera(const CameraDescription *cam)
 }
 
 
-void SceneBuilder::onEnterTransform(const Transform&)
+void SceneBuilder::onEnterTransform(const Transform& tr)
 {
-
+    Transform new_tr = tr * tr_stack.back();
+    tr_stack.push_back(new_tr);
 }
 
 void SceneBuilder::onExitTransform()
 {
-
+    tr_stack.pop_back();
 }
 
 

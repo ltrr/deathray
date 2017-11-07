@@ -9,6 +9,7 @@
 #include "lua/shader.h"
 #include "lua/surface.h"
 #include "lua/texture.h"
+#include "lua/transform.h"
 #include "util/objparser.h"
 using std::string;
 
@@ -212,6 +213,9 @@ int luaopen_scene(lua_State* L)
 
     luaopen_light(L);                 // _G light
     lua_setglobal(L, "light");        // _G
+
+    luaopen_transform(L);             // _G transform
+    lua_setglobal(L, "transform");    // _G
 
     luaopen_surface(L);              // _G mat
     lua_pushstring(L, "surface");    // _G mat "mat"

@@ -22,9 +22,10 @@ class TransformDescription : public TransformableDescription
 {
 public:
     Transform tr;
-    std::vector<TransformableDescription> elements;
+    std::vector<TransformableDescriptionPtr> elements;
 
-    TransformDescription(const Transform& tr);
+    TransformDescription(const Transform& tr)
+        : tr(tr) { }
 
     void visit(SceneDescriptionVisitor *);
 };

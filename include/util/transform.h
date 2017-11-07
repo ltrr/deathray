@@ -54,11 +54,13 @@ struct Mat44
         Mat44 ans;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                for (int k = 0; j < 4; j++) {
+                ans.values[i][j] = 0;
+                for (int k = 0; k < 4; k++) {
                     ans.values[i][j] += values[i][k] * m.values[k][j];
                 }
             }
         }
+        return ans;
     }
 };
 
@@ -135,6 +137,40 @@ public:
             Mat44(1,0,0,-delta.x(),
                   0,1,0,-delta.y(),
                   0,0,1,-delta.z(),
+                  0,0,0,1)
+        );
+    }
+
+    static Transform rotate(const Vec3& axis, float angle)
+    {
+        Vec3 u = unit(axis);
+        float x = u.x(), y = u.y(), z = u.z();
+        float sin_ = sin(angle);
+        float cos_ = cos(angle);
+        float ncos = 1 - cos_;
+
+        return Transform(
+            Mat44(cos_ + x*x*ncos, x*y*ncos - z*sin_, x*z*ncos+y*sin_, 0,
+                  y*x*ncos + z*sin_, cos_ + y*y*ncos, y*z*ncos-x*sin_, 0,
+                  z*x*ncos-y*sin_, z*y*ncos + x*sin_, cos_ + z*z*ncos, 0,
+                  0,0,0,1),
+            Mat44(cos_ + x*x*ncos, x*y*ncos + z*sin_, x*z*ncos - y*sin_, 0,
+                  y*x*ncos - z*sin_, cos_ + y*y*ncos, y*z*ncos + x*sin_, 0,
+                  z*x*ncos + y*sin_, z*y*ncos - x*sin_, cos_ + z*z*ncos, 0,
+                  0,0,0,1)
+        );
+    }
+
+    static Transform scale(const Vec3& scale)
+    {
+        return Transform(
+            Mat44(scale.x(),0,0,0,
+                  0,scale.y(),0,0,
+                  0,0,scale.z(),0,
+                  0,0,0,1),
+            Mat44(1/scale.x(),0,0,0,
+                  0,1/scale.y(),0,0,
+                  0,0,1/scale.z(),0,
                   0,0,0,1)
         );
     }

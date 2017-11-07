@@ -27,8 +27,8 @@ public:
     static SurfacePtr fromDescription(const SurfaceDescription *,
         const Transform&);
 
-    static std::vector<SurfacePtr> fromMeshDescription(const SurfaceDescription *,
-        const Transform&);
+    static std::vector<SurfacePtr> fromMeshDescription(
+        const SurfaceDescription *, const Transform&);
 };
 
 #endif // DEATHRAY_TRIANGE_H_
