@@ -7,13 +7,14 @@ bool Sphere::hit(const Ray &ray, Hit& hit, float& error) const
 {
     Vec3 diff = ray.origin() - center_;
     // float a = 1; // ray direction is unitary
+    float a = len2(ray.dir());
     float b = dot(diff, ray.dir());  // B/2
     float c = len2(diff) - radius_ * radius_;    // C
-    float delta = (b*b - c);       // disc / 4
+    float delta = (b*b - a* c);       // disc / 4
 
     if (delta >= 0) {
         float d = sqrt(delta);
-        float root1 = -(d + b);
+        float root1 = -(d + b) / a;
         if (ray.over(root1)) {
             hit.t = root1;
             hit.point = ray.at(root1);
@@ -27,7 +28,7 @@ bool Sphere::hit(const Ray &ray, Hit& hit, float& error) const
             error = root1 * 1e-4f;
             return true;
         }
-        float root2 = (d - b);
+        float root2 = (d - b) / a;
         if (ray.over(root2)) {
             hit.t = root2;
             hit.point = ray.at(root2);

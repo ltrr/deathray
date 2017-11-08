@@ -41,5 +41,6 @@ Vec3 RayTracer::colorAt_rec(const ScenePtr& scene, const Ray& ray, int depth)
 
 Vec3 RayTracer::colorAt(const ScenePtr& scene, const Ray& ray)
 {
-    return colorAt_rec(scene, ray, 0);
+    Ray r(ray.origin(), 4*ray.dir()); return colorAt_rec(scene, r, 0);
+    //return colorAt_rec(scene, ray, 0);
 }

@@ -35,7 +35,7 @@ public:
     {
         Vec3 delta = position_ - p;
         float delta_len = len(delta);
-        return Ray(p, (1/delta_len) * delta, 0.f, delta_len);
+        return Ray(p, delta / delta_len, 0.f, delta_len);
     }
 };
 

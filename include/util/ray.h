@@ -16,13 +16,13 @@ public:
         : origin_(), dir_(1,0,0), mint_(0), maxt_(FLOAT_INF) {}
 
     Ray(Point3 origin, Vec3 dir)
-        : origin_(origin), dir_(unit(dir)), mint_(0), maxt_(FLOAT_INF) {}
+        : origin_(origin), dir_(dir), mint_(0), maxt_(FLOAT_INF) {}
 
     Ray(Point3 origin, Vec3 dir, float mint)
-        : origin_(origin), dir_(unit(dir)), mint_(mint), maxt_(FLOAT_INF) {}
+        : origin_(origin), dir_(dir), mint_(mint), maxt_(FLOAT_INF) {}
 
     Ray(Point3 origin, Vec3 dir, float mint, float maxt)
-        : origin_(origin), dir_(unit(dir)), mint_(mint), maxt_(maxt) {}
+        : origin_(origin), dir_(dir), mint_(mint), maxt_(maxt) {}
 
     inline Vec3 dir() const { return dir_; }
     inline Point3 origin() const { return origin_; }
