@@ -24,6 +24,17 @@ public:
     Ray rayFrom(const Point3& p) const {
         return Ray(p, direction_);
     }
+
+    static LightPtr fromDescription(const LightDescription *desc,
+        const Transform& tr)
+    {
+        const DirectionalLightDescription *dlight =
+            dynamic_cast<const DirectionalLightDescription *>(desc);
+
+        Point3 new_dir = tr.applyV(dlight->direction);
+
+        return LightPtr(new Sun(new_dir, dlight->intensity));
+    }
 };
 
 #endif // DEATHRAY_SUN_H_

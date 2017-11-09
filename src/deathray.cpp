@@ -57,15 +57,12 @@ class Observer : public SceneDescriptionVisitor
 
 void render(char* filename)
 {
-    auto res = quadratic(1, -1, -1);
-    std::cerr << std::get<0>(res) << ' '
-              << std::get<1>(res) << ' '
-              << std::get<2>(res) << '\n';
-
     SceneDescriptionPtr desc = loadSceneDescription(filename);
 
+    /*
     SceneDescriptionVisitor *v = new Observer();
     desc->visit(v);
+    */
 
     SceneBuilder sb;
     sb.start(desc);

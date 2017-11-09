@@ -1,6 +1,9 @@
 #include "scene/scenebuilder.h"
 #include "surface/triangle.h"
 #include "surface/sphere.h"
+#include "light/pointlight.h"
+#include "light/spotlight.h"
+#include "light/sun.h"
 
 
 SceneBuilder::SceneBuilder()
@@ -47,9 +50,21 @@ void SceneBuilder::onSurface(const SurfaceDescription *surf)
 }
 
 
-void SceneBuilder::onLight(const LightDescription *)
+void SceneBuilder::onLight(const LightDescription *light)
 {
-
+    switch (light->getKind()) {
+        case LightKind::POINT:
+            scene->addLight(
+                PointLight::fromDescription(light, tr_stack.back()));
+            break;
+        case LightKind::SPOT:
+            scene->addLight(
+                SpotLight::fromDescription(light, tr_stack.back()));
+            break;
+        case LightKind::DIRECTIONAL:
+            scene->addLight(Sun::fromDescription(light, tr_stack.back()));
+            break;
+    }
 }
 
 

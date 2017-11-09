@@ -37,6 +37,19 @@ public:
         float delta_len = len(delta);
         return Ray(p, delta / delta_len, 0.f, delta_len);
     }
+
+    static LightPtr fromDescription(const LightDescription *desc,
+        const Transform& tr)
+    {
+        const SpotLightDescription *splight =
+            dynamic_cast<const SpotLightDescription *>(desc);
+
+        Point3 new_pos = tr.applyP(splight->position);
+        Point3 new_dir = tr.applyV(splight->direction);
+
+        return LightPtr(new SpotLight(new_pos, new_dir, splight->intensity,
+                                      splight->angle, splight->decay));
+    }
 };
 
 #endif // DEATHRAY_SPOTLIGHT_H_
