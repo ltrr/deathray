@@ -65,12 +65,28 @@ struct Mat44
 };
 
 
+inline Mat44 transpose(const Mat44& m)
+{
+    return Mat44(
+        m(0,0), m(1,0), m(2,0), m(3,0),
+        m(0,1), m(1,1), m(2,1), m(3,1),
+        m(0,2), m(1,2), m(2,2), m(3,2),
+        m(0,3), m(1,3), m(2,3), m(3,3)
+    );
+}
+
+
 class Transform
 {
 private:
     Mat44 A, A_inv;
 
 public:
+
+    Transform()
+        : A(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1),
+          A_inv(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1) { }
+
     Transform(const Mat44& A, const Mat44& A_inv)
         : A(A), A_inv(A_inv) { }
 
@@ -94,6 +110,16 @@ public:
         );
     }
 
+    Point3 applyN(const Vec3& n) const
+    {
+        float x = n.x(), y = n.y(), z = n.z();
+        return Vec3(
+            A_inv(0,0)*x + A_inv(1,0)*y + A_inv(2,0)*z,
+            A_inv(0,1)*x + A_inv(1,1)*y + A_inv(2,1)*z,
+            A_inv(0,2)*x + A_inv(1,2)*y + A_inv(2,2)*z
+        );
+    }
+
     Vec3 applyInvV(const Vec3& v) const
     {
         float x = v.x(), y = v.y(), z = v.z();
@@ -114,6 +140,16 @@ public:
         );
     }
 
+    Point3 applyInvN(const Vec3& n) const
+    {
+        float x = n.x(), y = n.y(), z = n.z();
+        return Vec3(
+            A(0,0)*x + A(1,0)*y + A(2,0)*z,
+            A(0,1)*x + A(1,1)*y + A(2,1)*z,
+            A(0,2)*x + A(1,2)*y + A(2,2)*z
+        );
+    }
+
     Transform operator*(const Transform& tr) const
     {
         return Transform(A * tr.A, tr.A_inv * A_inv);
@@ -121,10 +157,7 @@ public:
 
     static Transform eye()
     {
-        return Transform(
-            Mat44(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1),
-            Mat44(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
-        );
+        return Transform();
     }
 
     static Transform translate(const Vec3& delta)
@@ -174,7 +207,18 @@ public:
                   0,0,0,1)
         );
     }
+
+    Mat44& matrix() { return A; }
+    const Mat44& matrix() const { return A; }
+    Mat44& inv_matrix() { return A_inv; }
+    const Mat44& inv_matrix() const { return A_inv; }
 };
+
+
+inline Transform inv(const Transform& t)
+{
+    return Transform(t.inv_matrix(), t.matrix());
+}
 
 
 #endif // DEATHRAY_UTIL_TRANSFORM_H_

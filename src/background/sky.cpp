@@ -11,6 +11,7 @@ Sky::Sky(const Color3f& zenith_, const Color3f& nadir_)
 
 Color3f Sky::colorAt(const Ray& ray)
 {
-    float t = (1 + ray.dir().y()) / 2;
+    float y = ray.dir().y() / len(ray.dir());
+    float t = (1 + y) / 2;
     return t * zenith_ + (1-t) * nadir_;
 }

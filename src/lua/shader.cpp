@@ -6,6 +6,7 @@
 #include "shader/normalshader.h"
 #include "shader/raytracer.h"
 #include "shader/toonshader.h"
+#include "shader/bbox.h"
 
 
 int shader_depth(lua_State* L)   // { foreground=, background=, maxdepth= }
@@ -42,6 +43,13 @@ int shader_toon(lua_State* L)
 }
 
 
+int shader_bbox(lua_State* L)
+{
+    LuaOp<ShaderPtr>::newuserdata(L, new BBoxShader());
+    return 1;
+}
+
+
 int shader_raytracer(lua_State* L)
 {
     if (lua_gettop(L) == 0) {
@@ -59,6 +67,7 @@ const luaL_Reg shader_lib[] = {
     { "depth", shader_depth },
     { "normal", shader_normal },
     { "blinnphong", shader_blinnphong },
+    { "bbox", shader_bbox },
     { "toon", shader_toon },
     { "raytracer", shader_raytracer },
     { nullptr, nullptr }

@@ -10,6 +10,8 @@ int shader_blinnphong(lua_State *);
 
 int shader_depth(lua_State *);
 
+int shader_bbox(lua_State *);
+
 int shader_normal(lua_State *);
 
 int shader_raytracer(lua_State *);
