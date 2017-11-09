@@ -19,54 +19,54 @@ scene = mkscene {
         aspect = width / height
     },
 
-    transform.rotate({1, 0, 0}, -math.pi/2,
-        transform.translate({0, -4, 2}, diamond)
+    transform.translate({0, -4, 2},
+        transform.rotate({1, 0, 0}, -math.pi/2, diamond)
     ),
-    transform.rotate({1, 0, 0}, -math.pi/4,
-        transform.translate({0, -2, 2}, diamond)
+    transform.translate({0, -2, 2},
+        transform.rotate({1, 0, 0}, -math.pi/4, diamond)
     ),
-    transform.rotate({1, 0, 0}, 0,
-        transform.translate({0, 0, 2}, diamond)
+    transform.translate({0, 0, 2},
+        transform.rotate({1, 0, 0}, 0, diamond)
     ),
-    transform.rotate({1, 0, 0}, math.pi/4,
-        transform.translate({0, 2, 2}, diamond)
+    transform.translate({0, 2, 2},
+        transform.rotate({1, 0, 0}, math.pi/4, diamond)
     ),
-    transform.rotate({1, 0, 0}, math.pi/2,
-        transform.translate({0, 4, 2}, diamond)
-    ),
-
-
-    transform.rotate({0, 1, 0}, -math.pi/2,
-        transform.translate({0, -4, 0}, diamond)
-    ),
-    transform.rotate({0, 1, 0}, -math.pi/4,
-        transform.translate({0, -2, 0}, diamond)
-    ),
-    transform.rotate({0, 1, 0}, 0,
-        transform.translate({0, 0, 0}, diamond)
-    ),
-    transform.rotate({0, 1, 0}, math.pi/4,
-        transform.translate({0, 2, 0}, diamond)
-    ),
-    transform.rotate({0, 1, 0}, math.pi/2,
-        transform.translate({0, 4, 0}, diamond)
+    transform.translate({0, 4, 2},
+        transform.rotate({1, 0, 0}, math.pi/2, diamond)
     ),
 
 
-    transform.rotate({0, 0, 1}, -math.pi/2,
-        transform.translate({0, -4, -2}, diamond)
+    transform.translate({0, -4, 0},
+        transform.rotate({0, 1, 0}, -math.pi/2, diamond)
     ),
-    transform.rotate({0, 0, 1}, -math.pi/4,
-        transform.translate({0, -2, -2}, diamond)
+    transform.translate({0, -2, 0},
+        transform.rotate({0, 1, 0}, -math.pi/4, diamond)
     ),
-    transform.rotate({0, 0, 1}, 0,
-        transform.translate({0, 0, -2}, diamond)
+    transform.translate({0, 0, 0},
+        transform.rotate({0, 1, 0}, 0, diamond)
     ),
-    transform.rotate({0, 0, 1}, math.pi/4,
-        transform.translate({0, 2, -2}, diamond)
+    transform.translate({0, 2, 0},
+        transform.rotate({0, 1, 0}, math.pi/4, diamond)
     ),
-    transform.rotate({0, 0, 1}, math.pi/2,
-        transform.translate({0, 4, -2}, diamond)
+    transform.translate({0, 4, 0},
+        transform.rotate({0, 1, 0}, math.pi/2, diamond)
+    ),
+
+
+    transform.translate({0, -4, -2},
+        transform.rotate({0, 0, 1}, -math.pi/2, diamond)
+    ),
+    transform.translate({0, -2, -2},
+        transform.rotate({0, 0, 1}, -math.pi/4, diamond)
+    ),
+    transform.translate({0, 0, -2},
+        transform.rotate({0, 0, 1}, 0, diamond)
+    ),
+    transform.translate({0, 2, -2},
+        transform.rotate({0, 0, 1}, math.pi/4, diamond)
+    ),
+    transform.translate({0, 4, -2},
+        transform.rotate({0, 0, 1}, math.pi/2, diamond)
     ),
 
     samples = 16,
