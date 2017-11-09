@@ -34,6 +34,19 @@ int surface_triangle(lua_State *L)   // { p1, p2, p3, material= }
 }
 
 
+int surface_plane(lua_State *L)   // { point=, normal=, material= }
+{
+    PlaneDescription *surf = new PlaneDescription();
+
+    getintable(L, 1, "point", surf->point);
+    getintable(L, 1, "normal", surf->normal);
+    getintable(L, 1, "material", surf->material);
+
+    LuaOp<TransformableDescriptionPtr>::newuserdata(L, surf);
+    return 1;
+}
+
+
 int surface_loadobj(lua_State *L)   // filename
 {
     std::string filename(LuaOp<std::string>::check(L, 1));
@@ -58,6 +71,7 @@ int surface_loadobj(lua_State *L)   // filename
 const luaL_Reg surface_lib[] = {
     { "sphere", surface_sphere },
     { "triangle", surface_triangle },
+    { "plane", surface_plane },
     { "loadobj", surface_loadobj },
     { nullptr, nullptr }
 };

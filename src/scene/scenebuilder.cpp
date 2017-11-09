@@ -1,6 +1,7 @@
 #include "scene/scenebuilder.h"
 #include "surface/triangle.h"
 #include "surface/sphere.h"
+#include "surface/plane.h"
 #include "light/pointlight.h"
 #include "light/spotlight.h"
 #include "light/sun.h"
@@ -41,6 +42,9 @@ void SceneBuilder::onSurface(const SurfaceDescription *surf)
             break;
         case SurfaceKind::SPHERE:
             scene->addSurface(Sphere::fromDescription(surf, tr_stack.back()));
+            break;
+        case SurfaceKind::PLANE:
+            scene->addSurface(Plane::fromDescription(surf, tr_stack.back()));
             break;
         case SurfaceKind::MESH:
             auto surfs = Triangle::fromMeshDescription(surf, tr_stack.back());

@@ -223,7 +223,7 @@ int luaopen_scene(lua_State* L)
     lua_settable(L, 1);               // _G mat
     transfer(L, "triangle");
     transfer(L, "sphere");
-    transfer(L, "spherevolume");
+    transfer(L, "plane");
     transfer(L, "loadobj");
     lua_pop(L, 1);                    // _G
 

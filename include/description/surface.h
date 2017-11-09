@@ -6,7 +6,7 @@
 #include "material/material.h"
 #include "util/vector.h"
 
-enum class SurfaceKind { UNK, TRIANGLE, SPHERE, MESH };
+enum class SurfaceKind { UNK, TRIANGLE, SPHERE, MESH, PLANE };
 
 
 class SurfaceDescription : public TransformableDescription
@@ -49,6 +49,16 @@ public:
     std::vector<std::array<int, 3>> faces;
 
     SurfaceKind getKind() const { return SurfaceKind::MESH; }
+};
+
+
+class PlaneDescription : public SurfaceDescription
+{
+public:
+    Point3 point;
+    Vec3 normal;
+
+    SurfaceKind getKind() const { return SurfaceKind::PLANE; }
 };
 
 
