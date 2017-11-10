@@ -29,6 +29,21 @@ int scene_lookat(lua_State* L)
 }
 
 
+int scene_orthocam(lua_State* L)
+{
+    OrthogonalCameraDescription *cam = new OrthogonalCameraDescription;
+
+    getintable(L, 1, "position", cam->position);
+    getintable(L, 1, "target", cam->target);
+    getintable(L, 1, "up", cam->up);
+    getintable(L, 1, "width", cam->width);
+    getintable(L, 1, "height", cam->height);
+
+    LuaOp<TransformableDescriptionPtr>::newuserdata(L, cam);
+    return 1;
+}
+
+
 int scene_mkviewport(lua_State* L)  // { width=, height= }
 {
     int width, height;
@@ -67,31 +82,6 @@ int scene_mkoutputconfig(lua_State* L)
     return 1;
 }
 
-
-/*
-void add_surfaces(lua_State* L, SceneDescription* scene) // ... (table|obj)
-{
-    if (lua_istable(L, -1)) {                        // ... table
-        lua_len(L, -1);                               // ... table len
-        int len = lua_tointeger(L, -1);              // ... table len
-        lua_pop(L, 1);                               // ... table
-        for (int i = 1; i <= len; i++) {
-            lua_geti(L, -1, i);                      // ... table (table|obj)
-            add_surfaces(L, scene);                  // ... table (table|obj)
-            lua_pop(L, 1);                           // ... table
-        }
-    }
-    else if (LuaOp<SurfaceDescriptionPtr>::is(L, -1)) {
-        SurfaceDescriptionPtr surface =
-            LuaOp<SurfaceDescriptionPtr>::check(L, -1);  // table surf
-        scene->addSurface(surface);                      // table surf
-    }
-    /*
-    else if(LuaOp<LightPtr>::is(L, -1)) {
-        LightPtr light = LuaOp<LightPtr>::check(L, -1);        // table light
-        scene->addLight(light);                                // table light
-    }
-}*/
 
 void add_transformables_to_scene(lua_State *L, SceneDescription *scene)
 {
@@ -163,6 +153,7 @@ int scene_mkscene(lua_State* L) // { obj1, obj2, {objs}, ..., bg = }
 
 const luaL_Reg scene_lib[] = {
     { "lookat", scene_lookat },
+    { "orthocam", scene_orthocam },
     { "mkviewport", scene_mkviewport },
     { "sky", scene_mksky },
     { "mkscene", scene_mkscene },

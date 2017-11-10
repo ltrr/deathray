@@ -4,7 +4,7 @@
 #include "description/transformable.h"
 
 
-enum class CameraKind { UNK, PERSPECTIVE, ORTOGONAL };
+enum class CameraKind { UNK, PERSPECTIVE, ORTHOGONAL };
 
 class CameraDescription : public TransformableDescription
 {
@@ -26,6 +26,20 @@ public:
     float aspect_ratio;
 
     CameraKind getKind() const { return CameraKind::PERSPECTIVE; }
+};
+
+
+class OrthogonalCameraDescription : public CameraDescription
+{
+public:
+    Point3 position;
+    Point3 target;
+    Vec3 up;
+
+    float width;
+    float height;
+
+    CameraKind getKind() const { return CameraKind::ORTHOGONAL; }
 };
 
 

@@ -35,4 +35,21 @@ public:
 };
 
 
+class OrthogonalCamera : public Camera
+{
+private:
+    Vec3 direction_, bottomleft_, horizontal_, vertical_;
+
+public:
+    OrthogonalCamera();
+
+    OrthogonalCamera(const Point3& origin, const Point3& target,
+        const Vec3& up, float width, float height);
+
+    Ray windowToRay(const Vec3& v) const;
+
+    static CameraPtr fromDescription(const CameraDescription *cam);
+};
+
+
 #endif // DEATHRAY_CAMERA_H

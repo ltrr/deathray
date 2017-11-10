@@ -10,6 +10,8 @@
 
 int scene_lookat(lua_State* L);
 
+int scene_orthocam(lua_State* L);
+
 int scene_mkviewport(lua_State* L);
 
 int scene_mksky(lua_State* L);

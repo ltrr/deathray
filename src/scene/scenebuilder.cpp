@@ -78,6 +78,9 @@ void SceneBuilder::onCamera(const CameraDescription *cam)
         case CameraKind::PERSPECTIVE:
             scene->camera() = PerspectiveCamera::fromDescription(cam);
             break;
+        case CameraKind::ORTHOGONAL:
+            scene->camera() = OrthogonalCamera::fromDescription(cam);
+            break;
     }
 }
 

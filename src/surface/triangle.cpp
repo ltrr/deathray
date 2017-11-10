@@ -62,11 +62,16 @@ bool Triangle::hit(const Ray &ray, Hit& hit, float& error) const
 
 
 SurfacePtr Triangle::fromDescription(const SurfaceDescription *surf,
-    const Transform&)
+    const Transform& tr)
 {
     const TriangleDescription *tri =
         dynamic_cast<const TriangleDescription *>(surf);
-    return SurfacePtr(new Triangle(tri->p0, tri->p1, tri->p2, tri->material));
+
+    Point3 q0 = tr.applyP(tri->p0);
+    Point3 q1 = tr.applyP(tri->p1);
+    Point3 q2 = tr.applyP(tri->p2);
+
+    return SurfacePtr(new Triangle(q0, q1, q2, tri->material));
 }
 
 
