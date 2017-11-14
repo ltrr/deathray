@@ -13,7 +13,16 @@ public:
     BBox() {}
 
     BBox(const Point3& p1, const Point3& p2)
-        : min_(::min(p1, p2)), max_(::max(p1, p2)) {}
+        : min_(::min(p1, p2)), max_(::max(p1, p2)) {
+
+        Vec3 diff = max_ - min_;
+        for (int i = 0; i < 3; i++) {
+            if (diff[i] < 1e-3) {
+                min_[i] -= 1e-3;
+                max_[i] += 1e-3;
+            }
+        }
+    }
 
     inline bool inside(const Point3& p) const
     {
