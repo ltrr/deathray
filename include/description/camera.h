@@ -37,6 +37,7 @@ public:
     Point3 position;
     Point3 target;
     Vec3 up;
+    Vec3 direction;
 
     float width;
     float height;

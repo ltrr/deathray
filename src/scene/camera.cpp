@@ -90,6 +90,14 @@ OrthogonalCamera::OrthogonalCamera(const Point3& origin, const Vec3& target,
 }
 
 
+OrthogonalCamera::OrthogonalCamera(const Point3& origin, const Point3& target,
+    const Vec3& up, float width, float height, const Vec3& dir)
+    : OrthogonalCamera(origin, target, up, width, height)
+{
+    this->direction_ = unit(dir);
+}
+
+
 Ray OrthogonalCamera::windowToRay(const Vec3& uv) const
 {
     Point3 origin = bottomleft_ + uv.x() * horizontal_ + uv.y() * vertical_;
@@ -102,9 +110,19 @@ CameraPtr OrthogonalCamera::fromDescription(const CameraDescription *desc)
     const OrthogonalCameraDescription *cam =
         dynamic_cast<const OrthogonalCameraDescription *>(desc);
 
-    return CameraPtr(new OrthogonalCamera(cam->position,
-                                           cam->target,
-                                           cam->up,
-                                           cam->width,
-                                           cam->height));
+    if (cam->direction == Vec3()) {
+        return CameraPtr(new OrthogonalCamera(cam->position,
+                                               cam->target,
+                                               cam->up,
+                                               cam->width,
+                                               cam->height));
+    }
+    else {
+        return CameraPtr(new OrthogonalCamera(cam->position,
+                                               cam->target,
+                                               cam->up,
+                                               cam->width,
+                                               cam->height,
+                                               cam->direction));
+    }
 }

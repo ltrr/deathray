@@ -50,6 +50,9 @@ public:
     OrthogonalCamera(const Point3& origin, const Point3& target,
         const Vec3& up, float width, float height);
 
+    OrthogonalCamera(const Point3& origin, const Point3& target,
+        const Vec3& up, float width, float height, const Vec3& dir);
+
     Ray windowToRay(const Vec3& v) const;
 
     static CameraPtr fromDescription(const CameraDescription *cam);

@@ -40,6 +40,7 @@ int scene_orthocam(lua_State* L)
     getintable(L, 1, "up", cam->up);
     getintable(L, 1, "width", cam->width);
     getintable(L, 1, "height", cam->height);
+    getintable(L, 1, "direction", cam->direction, Vec3());
 
     LuaOp<TransformableDescriptionPtr>::newuserdata(L, cam);
     return 1;

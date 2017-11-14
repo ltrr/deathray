@@ -37,6 +37,8 @@ public:
     inline void operator*=(const Vec3& v);
     inline void operator/=(float f);
     inline void operator/=(const Vec3& v);
+
+    inline bool operator==(const Vec3& v) const;
 };
 
 

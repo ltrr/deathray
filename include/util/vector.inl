@@ -56,6 +56,14 @@ inline void Vec3::operator/=(const Vec3& v)
 }
 
 
+inline bool Vec3::operator==(const Vec3& v) const
+{
+    return (this->x() == v.x()
+         && this->y() == v.y()
+         && this->z() == v.z());
+}
+
+
 //// vector operations ////
 inline Vec3 operator+(const Vec3& v1, const Vec3& v2)
 {
