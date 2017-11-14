@@ -24,6 +24,8 @@ public:
 
     float field_of_view;
     float aspect_ratio;
+    float focus_distance;
+    float aperture;
 
     CameraKind getKind() const { return CameraKind::PERSPECTIVE; }
 };

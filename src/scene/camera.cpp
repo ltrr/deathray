@@ -1,4 +1,5 @@
 #include "scene/camera.h"
+#include "util/random.h"
 
 
 PerspectiveCamera::PerspectiveCamera()
@@ -10,6 +11,12 @@ PerspectiveCamera::PerspectiveCamera()
 
 PerspectiveCamera::PerspectiveCamera(const Point3& origin, const Vec3& target,
     const Vec3& up, float fov, float aspect)
+    : PerspectiveCamera(origin, target, up, fov, aspect, 1, 0) { }
+
+
+PerspectiveCamera::PerspectiveCamera(const Point3& origin, const Vec3& target,
+    const Vec3& up, float fov, float aspect, float f, float aperture)
+    : f_(f), aperture_(aperture)
 {
     Vec3 front_u  = unit(target - origin);
     Vec3 up_u = unit(up - front_u * dot(front_u, up));
@@ -28,7 +35,19 @@ PerspectiveCamera::PerspectiveCamera(const Point3& origin, const Vec3& target,
 Ray PerspectiveCamera::windowToRay(const Vec3& uv) const
 {
     Vec3 target = bottomleft_ + uv.x() * horizontal_ + uv.y() * vertical_;
-    return Ray(origin_, unit(target));
+
+    Ray ray(origin_, unit(target));
+    if (aperture_ > 0.0f) {
+        Point3 f_point = ray.at(f_);
+        auto delta = rand_on_s1();
+        Vec3 du = (delta[0] * aperture_ / len(horizontal_)) * horizontal_;
+        Vec3 dv = (delta[1] * aperture_ / len(vertical_)) * vertical_;
+        Point3 origin = ray.origin() + du + dv;
+        return Ray(origin, unit(f_point - origin));
+    }
+    else {
+        return ray;
+    }
 }
 
 
@@ -41,7 +60,9 @@ CameraPtr PerspectiveCamera::fromDescription(const CameraDescription *desc)
                                            cam->target,
                                            cam->up,
                                            cam->field_of_view,
-                                           cam->aspect_ratio));
+                                           cam->aspect_ratio,
+                                           cam->focus_distance,
+                                           cam->aperture));
 }
 
 

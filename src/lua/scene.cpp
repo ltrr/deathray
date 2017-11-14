@@ -23,6 +23,8 @@ int scene_lookat(lua_State* L)
     getintable(L, 1, "up", cam->up);
     getintable(L, 1, "aspect", cam->aspect_ratio);
     getintable(L, 1, "fov", cam->field_of_view);
+    getintable(L, 1, "f", cam->focus_distance, 1.0f);
+    getintable(L, 1, "aperture", cam->aperture, 0.0f);
 
     LuaOp<TransformableDescriptionPtr>::newuserdata(L, cam);
     return 1;

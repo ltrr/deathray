@@ -22,12 +22,16 @@ class PerspectiveCamera : public Camera
 {
 private:
     Vec3 origin_, bottomleft_, horizontal_, vertical_;
+    float f_, aperture_;
 
 public:
     PerspectiveCamera();
 
     PerspectiveCamera(const Point3& origin, const Point3& target,
         const Vec3& up, float fov, float aspect);
+
+    PerspectiveCamera(const Point3& origin, const Point3& target,
+        const Vec3& up, float fov, float aspect, float f, float aperture);
 
     Ray windowToRay(const Vec3& v) const;
 
